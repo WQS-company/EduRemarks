@@ -1,0 +1,61 @@
+# === Sensitive Configuration ===
+config/database.php
+config/*.local.php
+.env
+.env.*
+
+# === Temporary / Debug files ===
+tmp/
+tmp_*.php
+test_*.php
+debug_*.php
+diag_*.php
+add_col.php
+fix_*.php
+migrate_*.php
+run_migration_*.php
+seed_*.php
+check_*.php
+
+# === Database dumps ===
+*.sql
+*.db
+*.sqlite
+eduremarks.db
+
+# === Archives ===
+*.zip
+*.tar.gz
+*.rar
+
+# === PHP error logs ===
+*.log
+error_log
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Node (if any) ===
+node_modules/
+npm-debug.log*
+
+# === Composer ===
+vendor/
+composer.lock
+
+# === Uploads (keep structure but not real files) ===
+# Uncomment below if you don't want to commit uploaded files
+# uploads/profiles/*
+# uploads/students/*
+# uploads/id_cards/*
+# uploads/support_files/*
+# !uploads/.gitkeep

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduRemarks Professional Flyer - Premium Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1F3C88;
+            --secondary: #D4AF37;
+            --accent: #FF5A5F;
+            --dark: #001233;
+            --light: #F8FAFC;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #E2E8F0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .flyer {
+            width: 800px;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.2);
+        }
+
+        /* Top Bar */
+        .header {
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section img {
+            height: 60px;
+        }
+
+        .logo-text {
+            border-left: 2px solid #EEE;
+            padding-left: 15px;
+        }
+
+        .logo-text h2 {
+            font-weight: 900;
+            color: var(--primary);
+            font-size: 1.8rem;
+            letter-spacing: -1px;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            position: relative;
+        }
+
+        .hero-left h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 0.9;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .hero-left h1 span {
+            color: #3B82F6;
+            display: block;
+        }
+
+        .hero-left h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .hero-left p {
+            font-size: 1rem;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .cta-box {
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* Mockups */
+        .mockups {
+            position: relative;
+            height: 500px;
+        }
+
+        .device {
+            position: absolute;
+            background: #000;
+            border-radius: 30px;
+            padding: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .phone-1 {
+            width: 180px;
+            height: 380px;
+            right: 140px;
+            top: 20px;
+            z-index: 2;
+        }
+
+        .phone-2 {
+            width: 180px;
+            height: 380px;
+            right: 0px;
+            top: 60px;
+            z-index: 1;
+        }
+
+        .screen {
+            background: #f0f0f0;
+            height: 100%;
+            width: 100%;
+            border-radius: 20px;
+            padding: 15px;
+            font-size: 0.5rem;
+            overflow: hidden;
+        }
+
+        /* Pricing Badge Style */
+        .pricing-badge {
+            position: absolute;
+            top: -20px;
+            right: 40px;
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            width: 200px;
+            transform: rotate(5deg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .pricing-badge small { font-weight: 700; opacity: 0.8; }
+        .pricing-badge h2 { font-size: 1.4rem; font-weight: 900; margin: 5px 0; color: var(--secondary); }
+        .pricing-badge .tag { background: var(--secondary); color: var(--dark); padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; }
+
+        /* Feature List */
+        .feature-section {
+            padding: 20px 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            background: #F1F5F9;
+            padding: 10px 20px;
+            border-radius: 50px;
+            width: 80%;
+        }
+
+        .feature-item i {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .feature-item span {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        /* Why Us Section */
+        .why-us {
+            background: var(--primary);
+            padding: 15px 40px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .why-us h4 { color: white; font-weight: 800; }
+
+        .why-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 15px 40px;
+            background: #F8FAFC;
+        }
+
+        .why-card {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .why-card i { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .why-card p { font-size: 0.7rem; font-weight: 800; line-height: 1.2; color: #64748B; }
+
+        /* Footer Info */
+        .footer-banner {
+            background: linear-gradient(to right, var(--primary), #3B82F6);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 60px 60px 0 0;
+            color: white;
+        }
+
+        .footer-contact h5 { font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px; }
+        .footer-contact h4 { font-size: 1.2rem; font-weight: 900; }
+
+        .social-follow { text-align: right; }
+        .social-follow h5 { font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px; }
+        .social-icons { display: flex; gap: 10px; justify-content: flex-end; }
+        .social-icons i { font-size: 1.2rem; }
+
+        /* Decorative Splashes */
+        .splash {
+            position: absolute;
+            background: #DBEAFE;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            bottom: -100px;
+            left: -100px;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="flyer">
+        <div class="pricing-badge">
+            <small>GET STARTED TODAY!</small>
+            <h2>PAY-AS-YOU-MEASURE</h2>
+            <div class="tag">NO FIXED SUBSCRIPTIONS</div>
+        </div>
+
+        <div class="header">
+            <div class="logo-section">
+                <img src="img/logo.png" alt="EduRemarks">
+                <div class="logo-text">
+                    <h2>EDUREMARKS</h2>
+                    <p>Modern School Management Infrastructure</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero">
+            <div class="hero-left">
+                <h1>Academic <span>Portal</span></h1>
+                <h3>The Smarter Way to Manage, Process & Excel</h3>
+                <p>EduRemarks is a secure, fast and reliable platform for all your school's administrative and academic needs.</p>
+                
+                <div class="cta-box">WHAT YOU CAN DO</div>
+                
+                <div class="feature-item"><i class="fas fa-file-invoice"></i> <span>Automated Result Processing</span></div>
+                <div class="feature-item"><i class="fas fa-wallet"></i> <span>Secure Fee Payments</span></div>
+                <div class="feature-item"><i class="fas fa-laptop-code"></i> <span>Integrated CBT Assessments</span></div>
+                <div class="feature-item"><i class="fas fa-users"></i> <span>Parent & Student Portals</span></div>
+                <div class="feature-item"><i class="fas fa-bell"></i> <span>SMS & Email Notifications</span></div>
+                <div class="feature-item"><i class="fas fa-chart-line"></i> <span>Performance Analysis</span></div>
+                <div class="feature-item"><i class="fas fa-shield"></i> <span>24/7 Data Security</span></div>
+            </div>
+
+            <div class="mockups">
+                <div class="device phone-1">
+                    <div class="screen">
+                        <!-- Mock content -->
+                        <div style="background:var(--primary); color:white; padding:10px; border-radius:5px 5px 0 0">Dashboard</div>
+                        <div style="padding:10px">
+                            <div style="height:40px; background:#ddd; margin-bottom:10px; border-radius:5px"></div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px">
+                               <div style="height:30px; background:#eee"></div><div style="height:30px; background:#eee"></div>
+                               <div style="height:30px; background:#eee"></div><div style="height:30px; background:#eee"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="device phone-2">
+                    <div class="screen">
+                        <!-- Mock content -->
+                        <div style="background:var(--secondary); color:#000; padding:10px; border-radius:5px 5px 0 0; font-weight:bold">Result Portal</div>
+                        <div style="padding:10px">
+                            <div style="height:20px; background:#ddd; margin-bottom:5px"></div>
+                            <div style="height:20px; background:#ddd; margin-bottom:5px"></div>
+                            <div style="height:60px; background:#f9f9f9; border:1px solid #ddd"></div>
+                            <div style="background:var(--primary); color:white; padding:5px; margin-top:10px; text-align:center">GENERATE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="why-us">
+            <h4>WHY CHOOSE EDUREMARKS?</h4>
+        </div>
+
+        <div class="why-cards">
+            <div class="why-card"><i class="fas fa-bolt"></i><p>FAST<br>PROCESSING</p></div>
+            <div class="why-card"><i class="fas fa-coins"></i><p>COST<br>EFFECTIVE</p></div>
+            <div class="why-card"><i class="fas fa-user-shield"></i><p>SECURE &<br>RELIABLE</p></div>
+            <div class="why-card"><i class="fas fa-headset"></i><p>24/7<br>SUPPORT</p></div>
+        </div>
+
+        <div style="padding: 20px 40px; display: flex; align-items: center; gap: 20px; background: #FFFBEB;">
+            <div style="background:var(--secondary); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:1.5rem"><i class="fas fa-school"></i></div>
+            <div>
+                <h4 style="color:var(--primary)">Perfect for Modern Schools & Academies</h4>
+                <p style="font-size:0.8rem; font-weight:700; color: #92400E;">Join over 500 institutions already transforming education!</p>
+            </div>
+        </div>
+
+        <div class="footer-banner">
+            <div class="footer-contact">
+                <h5>CONTACT US</h5>
+                <h4>+234 812 345 6789</h4>
+            </div>
+            <div class="social-follow">
+                <h5>FOLLOW US</h5>
+                <div class="social-icons">
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-globe"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="splash"></div>
+    </div>
+</body>
+</html>

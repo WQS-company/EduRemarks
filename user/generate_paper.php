@@ -30,6 +30,8 @@ $term = $_POST['term'] ?? '';
 $exam_type = $_POST['exam_type'] ?? '';
 $instructions = $_POST['instructions'] ?? '';
 $questions = json_decode($_POST['questions'] ?? '[]', true);
+$layout_density = $_POST['layout_density'] ?? 'standard';
+$writing_space = $_POST['writing_space'] ?? 'full';
 
 // Fetch School Info
 $school_id = $_SESSION['school_id'];
@@ -131,10 +133,10 @@ function getNumbering($index, $format) {
         .school-motto { font-size: 15px; font-style: italic; margin-top: 5px; color: #444; }
         .exam-details { margin-top: 15px; font-size: 18px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.5px; }
         
-        .student-meta { border: 2px solid #000; padding: 15px; margin-bottom: 25px; font-size: 14px; background: #fafafa; border-radius: 4px; }
-        .student-meta span { border-bottom: 1px dotted #000; display: inline-block; min-width: 180px; margin-left: 5px; font-weight: 600; }
+        .student-meta { border: 1px solid #000; padding: 12px 18px; margin-bottom: 20px; font-size: 14px; background: #fff; }
+        .student-meta span { border-bottom: 1px solid #000; display: inline-block; min-width: 180px; margin-left: 5px; font-weight: 600; }
         
-        .instructions { font-size: 14px; font-weight: 700; border: 1.5px dashed #000; padding: 12px 18px; margin-bottom: 30px; background: #fffef0; }
+        .instructions { font-size: 13px; font-weight: 700; border: 1px solid #000; padding: 10px 15px; margin-bottom: 20px; background: #f8fafc; }
         
         .question { margin-bottom: 45px; font-size: 16px; position: relative; } /* Increased gap from 30px to 45px */
         .question-num { font-weight: 700; float: left; width: 35px; }
@@ -156,18 +158,18 @@ function getNumbering($index, $format) {
         
         .q-attached-image { page-break-inside: avoid; }
         
-        /* Ruled Paper Style for Essay */
+        /* Ruled Paper Style for Essay - Contained within margins with professional gray lines */
         .ruled-section { 
-            margin-top: 25px; 
-            width: calc(100% + 40mm + 40px);
-            margin-left: calc(-20mm - 40px);
+            margin-top: 20px; 
+            width: 100%;
+            margin-left: 0;
             background-color: #fff;
-            background-image: repeating-linear-gradient(to bottom, transparent, transparent 39px, #000 39px, #000 40px);
-            background-size: 100% 40px;
-            min-height: 310px; 
+            background-image: repeating-linear-gradient(to bottom, transparent, transparent 29px, #cbd5e1 29px, #cbd5e1 30px);
+            background-size: 100% 30px;
+            min-height: 300px; 
             position: relative;
-            border-top: 1px solid #000;
-            border-bottom: 1px solid #000;
+            border-top: 1px solid #cbd5e1;
+            border-bottom: 1px solid #cbd5e1;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             box-sizing: border-box;
@@ -177,6 +179,160 @@ function getNumbering($index, $format) {
         .no-print-bar { background: #0f172a; color: #fff; padding: 15px 30px; text-align: center; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         .print-btn { background: #dc2626; color: #fff; border: none; padding: 10px 25px; font-weight: 800; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4); }
         .print-btn:hover { transform: translateY(-2px); background: #b91c1c; }
+
+        /* ==========================================================
+           DYNAMIC ECO/PAPER-SAVER LAYOUT MODIFICATIONS 
+           ========================================================== */
+        
+        <?php if ($layout_density === 'economic'): ?>
+        .page { 
+            padding: 12mm; 
+        }
+        @media print {
+            .page { padding: 12mm; }
+        }
+        body { 
+            font-size: 13px; 
+            line-height: 1.4;
+        }
+        .header { 
+            padding-bottom: 8px; 
+            margin-bottom: 15px; 
+            border-bottom-width: 2px;
+        }
+        .school-logo { 
+            max-height: 60px; 
+            margin-bottom: 6px;
+        }
+        .school-name { 
+            font-size: 20px; 
+        }
+        .school-motto { 
+            font-size: 12px; 
+            margin-top: 2px;
+        }
+        .exam-details { 
+            margin-top: 8px; 
+            font-size: 14px; 
+        }
+        .student-meta { 
+            padding: 8px 12px; 
+            margin-bottom: 15px; 
+            font-size: 12px; 
+        }
+        .student-meta span { 
+            min-width: 140px; 
+        }
+        .instructions { 
+            font-size: 12px; 
+            padding: 8px 14px; 
+            margin-bottom: 15px; 
+        }
+        .question { 
+            margin-bottom: 18px; 
+            font-size: 13px; 
+        }
+        .question-num { 
+            width: 25px; 
+        }
+        .question-text { 
+            margin-left: 30px; 
+            max-width: calc(100% - 30px);
+        }
+        .options { 
+            margin-top: 6px; 
+            margin-left: 30px; 
+            gap: 6px;
+        }
+        .tf-options { 
+            margin-top: 6px; 
+            margin-left: 30px;
+        }
+        <?php elseif ($layout_density === 'ultra'): ?>
+        .page { 
+            padding: 8mm; 
+        }
+        @media print {
+            .page { padding: 8mm; }
+        }
+        body { 
+            font-size: 11px; 
+            line-height: 1.3;
+        }
+        .header { 
+            padding-bottom: 4px; 
+            margin-bottom: 10px; 
+            border-bottom: 1.5px solid #000;
+        }
+        .school-logo { 
+            max-height: 45px; 
+            margin-bottom: 4px;
+        }
+        .school-name { 
+            font-size: 16px; 
+            letter-spacing: 0.5px;
+        }
+        .school-motto { 
+            display: none; 
+        }
+        .exam-details { 
+            margin-top: 4px; 
+            font-size: 11px; 
+        }
+        .student-meta { 
+            padding: 4px 8px; 
+            margin-bottom: 10px; 
+            font-size: 10px; 
+            border-width: 1px;
+        }
+        .student-meta span { 
+            min-width: 110px; 
+        }
+        .instructions { 
+            font-size: 10px; 
+            padding: 4px 8px; 
+            margin-bottom: 10px; 
+            border-width: 1px;
+        }
+        .question { 
+            margin-bottom: 8px; 
+            font-size: 11px; 
+        }
+        .question-num { 
+            width: 20px; 
+        }
+        .question-text { 
+            margin-left: 22px; 
+            max-width: calc(100% - 22px);
+        }
+        .options { 
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 4px;
+            margin-left: 22px;
+        }
+        .option {
+            margin-bottom: 0;
+        }
+        .tf-options { 
+            margin-top: 4px; 
+            margin-left: 22px;
+        }
+        <?php endif; ?>
+        
+        <?php if ($writing_space === 'none'): ?>
+        .ruled-section { 
+            display: none !important; 
+        }
+        <?php elseif ($writing_space === 'compact'): ?>
+        .ruled-section { 
+            margin-top: 12px;
+            min-height: 120px !important; 
+            background-size: 100% 28px;
+            background-image: repeating-linear-gradient(to bottom, transparent, transparent 27px, #000 27px, #000 28px);
+        }
+        <?php endif; ?>
     </style>
 </head>
 <body>
@@ -209,21 +365,39 @@ function getNumbering($index, $format) {
 
         <div class="student-meta">
             <?php if ($mode === 'booklet' && $student): ?>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <div>NAME: <span><?php echo htmlspecialchars(html_entity_decode($student['full_name'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                    <div>CLASS: <span><?php echo htmlspecialchars(html_entity_decode($student['class_name'] ?? '', ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>ADMISSION NO: <span><?php echo htmlspecialchars(html_entity_decode($student['admission_no'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                    <div>DATE: <span>____________________</span></div>
-                </div>
+                <?php if ($layout_density === 'ultra'): ?>
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>NAME: <span><?php echo htmlspecialchars(html_entity_decode($student['full_name'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
+                        <div>CLASS: <span><?php echo htmlspecialchars(html_entity_decode($student['class_name'] ?? '', ENT_QUOTES), ENT_QUOTES); ?></span></div>
+                        <div>ADMISSION NO: <span><?php echo htmlspecialchars(html_entity_decode($student['admission_no'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
+                        <div>DATE: <span>__________________</span></div>
+                    </div>
+                <?php else: ?>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>NAME: <span><?php echo htmlspecialchars(html_entity_decode($student['full_name'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
+                        <div>CLASS: <span><?php echo htmlspecialchars(html_entity_decode($student['class_name'] ?? '', ENT_QUOTES), ENT_QUOTES); ?></span></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>ADMISSION NO: <span><?php echo htmlspecialchars(html_entity_decode($student['admission_no'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
+                        <div>DATE: <span>____________________</span></div>
+                    </div>
+                <?php endif; ?>
             <?php else: ?>
-                <div style="margin-bottom: 12px;">NAME: __________________________________________________________________</div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>ADMISSION NO: _______________________</div>
-                    <div>CLASS: _______________________</div>
-                    <div>DATE: _________</div>
-                </div>
+                <?php if ($layout_density === 'ultra'): ?>
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>NAME: ____________________________________________</div>
+                        <div>ADM NO: __________________</div>
+                        <div>CLASS: ___________</div>
+                        <div>DATE: _________</div>
+                    </div>
+                <?php else: ?>
+                    <div style="margin-bottom: 12px;">NAME: __________________________________________________________________</div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>ADMISSION NO: _______________________</div>
+                        <div>CLASS: _______________________</div>
+                        <div>DATE: _________</div>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
 
@@ -260,6 +434,9 @@ function getNumbering($index, $format) {
                         </div>
                     <?php elseif ($q['type'] === 'essay'): 
                         $space_multiplier = isset($q['space']) ? floatval($q['space']) : 0.5;
+                        if ($writing_space === 'compact') {
+                            $space_multiplier *= 0.4;
+                        }
                         // Approximate usable A4 height is 250mm. 
                         // We calculate min-height in mm to maintain paper fidelity.
                         $min_height = 250 * $space_multiplier;

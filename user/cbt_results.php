@@ -168,7 +168,7 @@ $pass_rate = $total_submitted > 0 ? round($pass_count / $total_submitted * 100) 
                                     </th>
                                     <th>#</th>
                                     <th>Student</th>
-                                    <th>Admission No</th>
+                                    <th><?php echo get_label('Admission No'); ?></th>
                                     <th>Score</th>
                                     <th>Percentage</th>
                                     <th>Status</th>

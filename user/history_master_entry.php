@@ -20,7 +20,7 @@ $is_higher_ed = (
 
 $term_label    = get_label('Term');
 $class_label   = get_label('Class');
-$subject_label = $is_higher_ed ? 'Course' : 'Subject';
+$subject_label = get_label('Subject');
 
 // Context Filters
 $session_id = intval($_GET['session_id'] ?? $active_school['current_session_id'] ?? 0);

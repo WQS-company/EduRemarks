@@ -454,7 +454,7 @@ if ($class_filter) {
             </div>
             <div class="search-wrapper" style="min-width:220px;">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchPortal" class="form-control form-control-sm py-2" placeholder="Search by name or admission no..." oninput="filterPortalStudents()">
+                <input type="text" id="searchPortal" class="form-control form-control-sm py-2" placeholder="Search by name or <?php echo strtolower(get_label('Admission No')); ?>..." oninput="filterPortalStudents()">
             </div>
         </div>
 
@@ -795,7 +795,7 @@ function showCredentials(credentials) {
                     <tr style="background:#f1f5f9;">
                         <th style="border:1px solid #ddd; padding:8px; text-align:left;">S/N</th>
                         <th style="border:1px solid #ddd; padding:8px; text-align:left;">Student Name</th>
-                        <th style="border:1px solid #ddd; padding:8px; text-align:left;">Admission No</th>
+                        <th style="border:1px solid #ddd; padding:8px; text-align:left;"><?php echo get_label('Admission No'); ?></th>
                         <th style="border:1px solid #ddd; padding:8px; text-align:left;">Password</th>
                     </tr>
                 </thead>

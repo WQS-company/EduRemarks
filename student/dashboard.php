@@ -2,6 +2,16 @@
 // student/dashboard.php
 require_once 'auth.php';
 
+// Determine if Higher Ed / Tertiary
+$type = strtolower($student['school_type'] ?? '');
+$is_higher_ed = (
+    strpos($type, 'tertiary') !== false || 
+    strpos($type, 'vocational') !== false || 
+    strpos($type, 'polytechnic') !== false || 
+    strpos($type, 'university') !== false || 
+    strpos($type, 'college') !== false
+);
+
 // Fetch school-specific sessions for filtering
 $sessions_stmt = $pdo->prepare("SELECT id, name FROM academic_sessions WHERE school_id = ? ORDER BY created_at DESC");
 $sessions_stmt->execute([$school_id]);
@@ -91,8 +101,8 @@ foreach ($current_results as $res) {
     $total_score_sum += $res['total'];
     $results_with_scores++;
     
-    // GPA Logic (Tertiary)
-    if (isset($res['credit_units']) && $res['credit_units'] > 0) {
+    // GPA Logic (Tertiary only)
+    if ($is_higher_ed && isset($res['credit_units']) && $res['credit_units'] > 0) {
         $grade_point = 0;
         $score = $res['total'];
         if($score >= 70) $grade_point = 5;
@@ -217,7 +227,7 @@ if ($current_class) {
                          style="width:85px; height:85px; border-radius:22px; border:4px solid rgba(255,255,255,0.15); object-fit:cover; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
                     <div class="flex-grow-1 w-100">
                         <div class="text-white opacity-75 small fw-bold uppercase tracking-2 mb-1">
-                            <?php echo !empty($student['department_name']) ? 'Department of ' . htmlspecialchars($student['department_name']) : 'Academic Node Access'; ?>
+                            <?php echo !empty($student['department_name']) ? get_label('Section') . ' of ' . htmlspecialchars($student['department_name']) : 'Academic Node Access'; ?>
                         </div>
                         <h4 class="fw-800 mb-1 text-white d-none d-md-flex align-items-center gap-2" style="font-size: clamp(1.1rem, 4vw, 1.4rem); white-space: nowrap; letter-spacing: -0.5px;">
                             Welcome, <?php echo htmlspecialchars(explode(' ', $student['full_name'])[0]); ?>! 👋
@@ -230,7 +240,11 @@ if ($current_class) {
                                 </span>
                                 <?php endif; ?>
                                 <span class="badge bg-white bg-opacity-20 rounded-pill px-3 py-2 text-warning" style="font-size:0.7rem; border: 1px solid rgba(255,255,255,0.2); font-weight: 800;">
-                                    GPA: <?php echo number_format($gpa, 2); ?>
+                                    <?php if ($is_higher_ed): ?>
+                                        GPA: <?php echo number_format($gpa, 2); ?>
+                                    <?php else: ?>
+                                        Average: <?php echo number_format($avg_score, 1); ?>%
+                                    <?php endif; ?>
                                 </span>
                             </div>
                             <div class="d-flex gap-2">
@@ -273,6 +287,50 @@ if ($current_class) {
                     </div>
                 </div>
                 <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <a href="transcript.php" class="stu-card text-decoration-none d-flex flex-column align-items-center text-center p-4 position-relative overflow-hidden" style="border-radius: 18px; background: linear-gradient(135deg, #1a2b4a 0%, #2d5faa 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(26,43,74,0.2);">
+                    <div class="position-absolute top-0 end-0 p-2 opacity-10"><i class="fas fa-scroll fa-4x"></i></div>
+                    <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                        <i class="fas fa-scroll" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div class="fw-800 mb-1" style="font-size: 0.85rem;"><?php echo $is_higher_ed ? 'Transcript' : get_label('Broadsheet'); ?></div>
+                    <div class="opacity-75" style="font-size: 0.68rem;">Download your full academic record</div>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="view_report.php?session_id=<?php echo $current_session_id; ?>&term_id=<?php echo $current_term_id; ?>&class_id=<?php echo $current_class['id']; ?>" class="stu-card text-decoration-none d-flex flex-column align-items-center text-center p-4 position-relative overflow-hidden" style="border-radius: 18px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(5,150,105,0.2);">
+                    <div class="position-absolute top-0 end-0 p-2 opacity-10"><i class="fas fa-file-invoice fa-4x"></i></div>
+                    <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                        <i class="fas fa-file-invoice" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div class="fw-800 mb-1" style="font-size: 0.85rem;"><?php echo get_label('Report Card'); ?></div>
+                    <div class="opacity-75" style="font-size: 0.68rem;">Current <?php echo strtolower(get_label('Term')); ?> results</div>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="performance.php" class="stu-card text-decoration-none d-flex flex-column align-items-center text-center p-4 position-relative overflow-hidden" style="border-radius: 18px; background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(124,58,237,0.2);">
+                    <div class="position-absolute top-0 end-0 p-2 opacity-10"><i class="fas fa-chart-line fa-4x"></i></div>
+                    <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                        <i class="fas fa-chart-line" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div class="fw-800 mb-1" style="font-size: 0.85rem;">Performance</div>
+                    <div class="opacity-75" style="font-size: 0.68rem;">Track your academic progress</div>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="academic_audit.php" class="stu-card text-decoration-none d-flex flex-column align-items-center text-center p-4 position-relative overflow-hidden" style="border-radius: 18px; background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(234,88,12,0.2);">
+                    <div class="position-absolute top-0 end-0 p-2 opacity-10"><i class="fas fa-history fa-4x"></i></div>
+                    <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                        <i class="fas fa-history" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div class="fw-800 mb-1" style="font-size: 0.85rem;"><?php echo get_label('Academic Audit'); ?></div>
+                    <div class="opacity-75" style="font-size: 0.68rem;">Full academic timeline</div>
+                </a>
             </div>
         </div>
 
@@ -346,8 +404,13 @@ if ($current_class) {
             <div class="col-6 col-lg-3">
                 <div class="stu-stat-card">
                     <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i class="fas fa-chart-line"></i></div>
-                    <div class="stat-value" style="color:#10b981;"><?php echo number_format($gpa, 2); ?></div>
-                    <div class="stat-label">Calculated GPA</div>
+                    <?php if ($is_higher_ed): ?>
+                        <div class="stat-value" style="color:#10b981;"><?php echo number_format($gpa, 2); ?></div>
+                        <div class="stat-label">Calculated GPA</div>
+                    <?php else: ?>
+                        <div class="stat-value" style="color:#10b981;"><?php echo number_format($avg_score, 1); ?>%</div>
+                        <div class="stat-label">Average Score</div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
@@ -391,11 +454,11 @@ if ($current_class) {
         <!-- Session Courses -->
         <div class="stu-card">
             <div class="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-3 mb-4">
-                <div class="section-head mb-0"><i class="fas fa-book-bookmark"></i> Session Courses</div>
+                <div class="section-head mb-0"><i class="fas fa-book-bookmark"></i> Session <?php echo get_label('Subjects'); ?></div>
                 
                 <ul class="nav nav-pills bg-light p-1 rounded-pill" id="scoreTabs" role="tablist" style="font-size: 0.75rem;">
                     <?php if (empty($terms)): ?>
-                        <li class="nav-item"><span class="nav-link disabled rounded-pill">No Semesters Found</span></li>
+                        <li class="nav-item"><span class="nav-link disabled rounded-pill">No <?php echo get_label('Terms'); ?> Found</span></li>
                     <?php else: ?>
                         <?php foreach($terms as $idx => $t): ?>
                             <li class="nav-item" role="presentation">
@@ -413,12 +476,12 @@ if ($current_class) {
                 
                 <a href="performance.php" class="btn btn-light btn-sm rounded-pill px-3 fw-700 text-decoration-none d-none d-md-inline-block" style="font-size:0.75rem;">View All Progress</a>
             </div>
-
+ 
             <div class="tab-content" id="scoreTabsContent">
                 <?php if (empty($terms)): ?>
                     <div class="stu-empty py-4">
                         <div class="stu-empty-icon"><i class="fas fa-calendar-times"></i></div>
-                        <h6 class="fw-bold text-muted">No academic terms structured</h6>
+                        <h6 class="fw-bold text-muted">No academic <?php echo strtolower(get_label('Terms')); ?> structured</h6>
                     </div>
                 <?php else: ?>
                     <?php foreach($terms as $t): 
@@ -431,31 +494,50 @@ if ($current_class) {
                         <?php if (empty($ac_list)): ?>
                             <div class="stu-empty py-4">
                                 <div class="stu-empty-icon"><i class="fas fa-inbox"></i></div>
-                                <h6 class="fw-bold text-muted">No courses assigned for <?php echo htmlspecialchars(get_label($t['name'])); ?></h6>
-                                <p class="text-muted small">Academic registry has not mapped courses for this period.</p>
+                                <h6 class="fw-bold text-muted">No <?php echo strtolower(get_label('Subjects')); ?> assigned for <?php echo htmlspecialchars(get_label($t['name'])); ?></h6>
+                                <p class="text-muted small">Academic registry has not mapped <?php echo strtolower(get_label('Subjects')); ?> for this period.</p>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
                                 <table class="score-table">
                                     <thead>
-                                        <tr><th class="ps-3"><?php echo get_label('Subject'); ?></th><th>C.A (40)</th><th>EXAM (60)</th><th>Total</th><th>Grade</th></tr>
+                                        <tr>
+                                            <th class="ps-3"><?php echo get_label('Subject'); ?></th>
+                                            <?php if ($is_higher_ed): ?>
+                                                <th>C.A (40)</th><th>EXAM (60)</th>
+                                            <?php else: ?>
+                                                <th>C.A 1 (20)</th><th>C.A 2 (20)</th><th>EXAM (60)</th>
+                                            <?php endif; ?>
+                                            <th>Total</th><th>Grade</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                     <?php foreach($ac_list as $ac):
                                         $res = $res_lookup[$ac['id']] ?? null;
                                         $gc = 'grade-c';
                                         if($res) {
-                                            if($res['total'] >= 70) $gc = 'grade-a';
-                                            elseif($res['total'] >= 60) $gc = 'grade-b';
-                                            elseif($res['total'] < 40) $gc = 'grade-f';
+                                            if ($is_higher_ed) {
+                                                if($res['total'] >= 70) $gc = 'grade-a';
+                                                elseif($res['total'] >= 60) $gc = 'grade-b';
+                                                elseif($res['total'] < 40) $gc = 'grade-f';
+                                            } else {
+                                                if($res['total'] >= 75) $gc = 'grade-a';
+                                                elseif($res['total'] >= 65) $gc = 'grade-b';
+                                                elseif($res['total'] < 40) $gc = 'grade-f';
+                                            }
                                         }
                                     ?>
                                         <tr>
                                             <td class="ps-3" data-label="<?php echo get_label('Subject'); ?>">
                                                 <div class="subject-name"><?php echo htmlspecialchars($ac['name']); ?></div>
-                                                <div class="text-muted" style="font-size:0.65rem;"><?php echo htmlspecialchars($ac['code']); ?> • <?php echo $ac['credit_units']; ?> Credits</div>
+                                                <div class="text-muted" style="font-size:0.65rem;"><?php echo htmlspecialchars($ac['code']); ?><?php if ($is_higher_ed): ?> • <?php echo $ac['credit_units']; ?> Credits<?php endif; ?></div>
                                             </td>
-                                            <td class="fw-600 text-muted" data-label="C.A (40)"><?php echo $res ? ($res['ca1'] + $res['ca2']) : '-'; ?></td>
+                                            <?php if ($is_higher_ed): ?>
+                                                <td class="fw-600 text-muted" data-label="C.A (40)"><?php echo $res ? $res['ca1'] : '-'; ?></td>
+                                            <?php else: ?>
+                                                <td class="fw-600 text-muted" data-label="C.A 1 (20)"><?php echo $res ? $res['ca1'] : '-'; ?></td>
+                                                <td class="fw-600 text-muted" data-label="C.A 2 (20)"><?php echo $res ? $res['ca2'] : '-'; ?></td>
+                                            <?php endif; ?>
                                             <td class="fw-600 text-muted" data-label="EXAM (60)"><?php echo $res ? $res['exam'] : '-'; ?></td>
                                             <td data-label="Total">
                                                 <?php if($res): ?>

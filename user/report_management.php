@@ -257,8 +257,8 @@ if ($role === 'staff' && $sd_row) {
                         <i class="fas fa-exclamation-triangle fa-lg"></i>
                     </div>
                     <div>
-                        <div class="fw-900 extra-small uppercase tracking-1 text-warning mb-1">Attention: No Course Assignment</div>
-                        <div class="small fw-700 text-dark">We couldn't find any courses allocated to you for the <strong><?php echo htmlspecialchars($active_school['term_name'] ?? 'selected semester'); ?></strong>. If this is an error, please contact the academic administrator to update your course mapping.</div>
+                        <div class="fw-900 extra-small uppercase tracking-1 text-warning mb-1">Attention: No <?php echo get_label('Subject'); ?> Assignment</div>
+                        <div class="small fw-700 text-dark">We couldn't find any <?php echo strtolower(get_label('Subjects')); ?> allocated to you for the <strong><?php echo htmlspecialchars($active_school['term_name'] ?? ('selected ' . strtolower(get_label('Term')))); ?></strong>. If this is an error, please contact the academic administrator to update your <?php echo strtolower(get_label('Subject')); ?> mapping.</div>
                     </div>
                 </div>
             <?php endif; ?>
@@ -279,7 +279,7 @@ if ($role === 'staff' && $sd_row) {
                         <label class="extra-small fw-800 text-muted uppercase tracking-1 mb-2"><?php echo get_label('Term'); ?> Context</label>
                         <select name="term_id" class="form-select border-0 bg-light rounded-pill fw-700" onchange="this.form.submit()">
                             <?php foreach($terms as $t): ?>
-                                <option value="<?php echo $t['id']; ?>" <?php echo $t['id'] == $current_term_id ? 'selected' : ''; ?>><?php echo htmlspecialchars($t['name']); ?> <?php echo get_label('Term'); ?></option>
+                                <option value="<?php echo $t['id']; ?>" <?php echo $t['id'] == $current_term_id ? 'selected' : ''; ?>><?php echo htmlspecialchars($t['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -303,7 +303,7 @@ if ($role === 'staff' && $sd_row) {
                             <label class="form-check-label ms-2 fw-800 small text-dark uppercase tracking-1" for="globalPositionToggle" style="font-size: 0.75rem; cursor: pointer;">Display Position</label>
                         </div>
                         <?php endif; ?>
-                        <div class="small text-muted fw-bold">Active Semester: <span class="text-primary"><?php echo $active_school['session_name'] ?? 'Active'; ?></span></div>
+                        <div class="small text-muted fw-bold">Active <?php echo get_label('Session'); ?>: <span class="text-primary"><?php echo $active_school['session_name'] ?? 'Active'; ?></span></div>
                     </div>
                 </div>
 

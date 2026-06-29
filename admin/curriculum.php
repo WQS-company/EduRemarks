@@ -12,7 +12,7 @@ if (!hasFeature('COURSE_CURRICULUM') && $role !== 'super_admin') {
     exit();
 }
 
-$pageTitle = "Course Curriculum Management";
+$pageTitle = get_label('Subject') . " Curriculum Management";
 
 // Pre-fetch basic data for filters
 $sections = $pdo->prepare("SELECT * FROM school_sections WHERE school_id = ? ORDER BY section_name");
@@ -138,7 +138,7 @@ $subjects = $subjects->fetchAll();
             <div class="container-fluid py-4">
                 <div class="d-flex flex-mobile-column justify-content-between align-items-center mb-5 gap-4">
                     <div>
-                        <h3 class="fw-900 mb-1 text-dark" style="letter-spacing:-1px;">Course Curriculum</h3>
+                        <h3 class="fw-900 mb-1 text-dark" style="letter-spacing:-1px;"><?php echo get_label('Subject'); ?> Curriculum</h3>
                         <p class="text-muted small mb-0 fw-500">Orchestrate world-class educational standards for your institution.</p>
                     </div>
                     <button class="btn btn-primary rounded-pill px-4 py-2 fw-800 shadow-sm" onclick="openNodeModal()">
@@ -220,18 +220,18 @@ $subjects = $subjects->fetchAll();
                                     <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['section_name']); ?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <label><i class="fas fa-layer-group me-1"></i> Section</label>
+                            <label><i class="fas fa-layer-group me-1"></i> <?php echo get_label('Section'); ?></label>
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="form-floating">
                             <select class="form-select border-0 shadow-sm bg-light" name="class_id" id="node_class">
-                                <option value="">Mixed Levels</option>
+                                <option value="">Mixed <?php echo get_label('Classes'); ?></option>
                                 <?php foreach($classes as $c): ?>
                                     <option value="<?php echo $c['id']; ?>"><?php echo htmlspecialchars($c['name']); ?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <label><i class="fas fa-users-rectangle me-1"></i> <?php echo get_label('Class'); ?><?php echo (get_label('Class') !== 'Level') ? ' Level' : ''; ?></label>
+                            <label><i class="fas fa-users-rectangle me-1"></i> <?php echo get_label('Class'); ?></label>
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">

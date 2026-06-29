@@ -21,12 +21,13 @@ $pageTitle = "My Profile";
     <link rel="stylesheet" href="../css/style.css">
     <style>
         .profile-pic-container { position: relative; width: 150px; height: 150px; margin: 0 auto; }
-        .profile-pic-preview { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 4px solid var(--white); box-shadow: var(--shadow-soft); }
-        .edit-pic-btn { position: absolute; bottom: 5px; right: 5px; background: var(--accent-gold); color: var(--dark-text); border: none; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .edit-pic-btn:hover { transform: scale(1.1); background: #e5a900; }
+        .profile-pic-preview { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .edit-pic-btn { position: absolute; bottom: 0; right: 0; background: #ffffff; color: #2D6CDF; border: 3px solid #ffffff; width: 36px; height: 36px; border-radius: 50%; display: flex !important; align-items: center !important; justify-content: center !important; cursor: pointer; transition: all 0.2s ease-in-out; box-shadow: 0 4px 12px rgba(0,0,0,0.12); margin: 0 !important; padding: 0 !important; }
+        .edit-pic-btn i { font-size: 13px !important; line-height: 1 !important; margin: 0 !important; padding: 0 !important; display: inline-block !important; }
+        .edit-pic-btn:hover { transform: scale(1.1); background: #f8fafc; color: #1f3c88; box-shadow: 0 6px 16px rgba(0,0,0,0.18); }
         .settings-card { border-radius: 20px; }
         .nav-pills .nav-link { border-radius: 50px; padding: 10px 25px; font-weight: 600; color: var(--muted-text); }
-        .nav-pills .nav-link.active { background: var(--primary-blue); color: var(--white); }
+        .nav-pills .nav-link.active { background: var(--primary-blue) !important; color: #ffffff !important; box-shadow: 0 4px 12px rgba(31, 60, 136, 0.25) !important; }
     </style>
     <script src="../js/security_ui.js"></script>
 </head>

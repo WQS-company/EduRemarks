@@ -157,7 +157,7 @@ if ($school['billing_mode'] !== 'subscription' || !$school['subscription_active'
         </div>
 
         <div class="section terms">
-            <p><strong>Operational Bypassing:</strong> Under this agreement, the institution is granted unlimited access to standard academic operations including result synchronization, student orchestration, and basic faculty coordination without credit consumption.</p>
+            <p><strong>Operational Bypassing:</strong> Under this agreement, the institution is granted unlimited access to standard academic operations including result synchronization, student orchestration, and basic <?php echo strtolower(get_label('Staff')); ?> coordination without credit consumption.</p>
             <p><strong>Policy Compliance:</strong> This agreement is binding for the specified period. Early termination or breach of platform security protocols may result in immediate decommissioning of the institutional node.</p>
         </div>
 

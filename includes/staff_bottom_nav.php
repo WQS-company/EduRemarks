@@ -66,24 +66,28 @@ $current_page = basename($_SERVER['PHP_SELF']);
   </div>
   <div class="offcanvas-body">
     <div class="row g-3 text-center pb-4">
+        <?php if (hasFeature('CBT_EXAMS')): ?>
         <div class="col-4">
             <a href="cbt_exams.php" class="text-decoration-none">
                 <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-laptop-code"></i></div>
                 <div class="extra-small fw-700 text-dark">Exams</div>
             </a>
         </div>
+        <?php endif; ?>
         <div class="col-4">
             <a href="students.php" class="text-decoration-none">
                 <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-user-graduate"></i></div>
                 <div class="extra-small fw-700 text-dark"><?php echo get_label('Pupils'); ?></div>
             </a>
         </div>
+        <?php if (hasFeature('CBT_EXAMS') && $staff_permissions['can_manage_cbt']): ?>
         <div class="col-4">
             <a href="question_builder.php" class="text-decoration-none">
                 <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-brain"></i></div>
                 <div class="extra-small fw-700 text-dark">Builder</div>
             </a>
         </div>
+        <?php endif; ?>
         <?php if (hasFeature('COURSE_CURRICULUM') && ($active_school['show_curriculum'] ?? 1)): ?>
         <div class="col-4">
             <a href="curriculum.php" class="text-decoration-none">

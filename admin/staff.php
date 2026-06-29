@@ -148,50 +148,30 @@ if ($active_school_id) {
                                                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Suspended</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td data-label="Permissions">
-                                                <div class="d-flex flex-column gap-2 text-start">
-                                                    <div class="form-check form-switch mb-0">
-                                                        <input class="form-check-input" type="checkbox" role="switch" 
-                                                               id="perm-stu-<?php echo $as['detail_id']; ?>" 
-                                                               <?php echo $as['can_manage_students'] ? 'checked' : ''; ?>
-                                                               onchange="togglePermission(<?php echo $as['detail_id']; ?>, 'can_manage_students', this.checked, 'stu')"
-                                                               title="Allow this <?php echo strtolower(get_label('Staff')); ?> to add/edit <?php echo strtolower(get_label('Pupils')); ?>">
-                                                        <label class="form-check-label small" for="perm-stu-<?php echo $as['detail_id']; ?>">
-                                                            Manage <?php echo get_label('Pupils'); ?>
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-switch mb-0">
-                                                        <input class="form-check-input" type="checkbox" role="switch" 
-                                                               id="perm-acad-<?php echo $as['detail_id']; ?>" 
-                                                               <?php echo $as['can_manage_academics'] ? 'checked' : ''; ?>
-                                                               onchange="togglePermission(<?php echo $as['detail_id']; ?>, 'can_manage_academics', this.checked, 'acad')"
-                                                               title="Allow this <?php echo strtolower(get_label('Staff')); ?> to manage <?php echo strtolower(get_label('Classes')); ?>, <?php echo strtolower(get_label('Subjects')); ?>, and <?php echo strtolower(get_label('Terms')); ?>">
-                                                        <label class="form-check-label small" for="perm-acad-<?php echo $as['detail_id']; ?>">
-                                                            Manage Academics
-                                                        </label>
-                                                    </div>
-                                                    <?php if (strpos($active_school['feature_access'] ?? '', 'CBT_EXAMS') !== false): ?>
-                                                    <div class="form-check form-switch mb-0">
-                                                        <input class="form-check-input border-warning" type="checkbox" role="switch" 
-                                                               id="perm-cbt-<?php echo $as['detail_id']; ?>" 
-                                                               <?php echo $as['can_manage_cbt'] ? 'checked' : ''; ?>
-                                                               onchange="togglePermission(<?php echo $as['detail_id']; ?>, 'can_manage_cbt', this.checked, 'cbt')"
-                                                               title="Allow this <?php echo strtolower(get_label('Staff')); ?> to utilize the Elite Question Builder feature.">
-                                                        <label class="form-check-label small text-warning fw-bold" for="perm-cbt-<?php echo $as['detail_id']; ?>">
-                                                            <i class="fas fa-bolt"></i> Elite Builder Access
-                                                        </label>
-                                                    </div>
-                                                    <?php endif; ?>
-                                                    <div class="form-check form-switch mb-0">
-                                                        <input class="form-check-input border-info" type="checkbox" role="switch" 
-                                                               id="perm-hist-<?php echo $as['detail_id']; ?>" 
-                                                               <?php echo $as['can_edit_history'] ? 'checked' : ''; ?>
-                                                               onchange="togglePermission(<?php echo $as['detail_id']; ?>, 'can_edit_history', this.checked, 'hist')"
-                                                               title="Allow this <?php echo strtolower(get_label('Staff')); ?> to update historical academic results.">
-                                                        <label class="form-check-label small text-info fw-bold" for="perm-hist-<?php echo $as['detail_id']; ?>">
-                                                            <i class="fas fa-history"></i> Edit Result History
-                                                        </label>
-                                                    </div>
+                                            <td data-label="Permissions" id="perm-badges-<?php echo $as['detail_id']; ?>">
+                                                <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                    <?php 
+                                                    $has_any = false;
+                                                    if ($as['can_manage_students']) {
+                                                        $has_any = true;
+                                                        echo '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 px-2.5 py-1 rounded-pill small fw-800"><i class="fas fa-user-graduate me-1"></i>' . get_label('Pupils') . '</span>';
+                                                    }
+                                                    if ($as['can_manage_academics']) {
+                                                        $has_any = true;
+                                                        echo '<span class="badge bg-indigo bg-opacity-10 text-indigo border border-indigo border-opacity-10 px-2.5 py-1 rounded-pill small fw-800" style="background-color: rgba(99, 102, 241, 0.1) !important; color: #6366f1 !important; border-color: rgba(99, 102, 241, 0.2) !important;"><i class="fas fa-book-open me-1"></i>Academics</span>';
+                                                    }
+                                                    if ($as['can_manage_cbt'] && strpos($active_school['feature_access'] ?? '', 'CBT_EXAMS') !== false) {
+                                                        $has_any = true;
+                                                        echo '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-10 px-2.5 py-1 rounded-pill small fw-800"><i class="fas fa-bolt me-1"></i>Elite Builder</span>';
+                                                    }
+                                                    if ($as['can_edit_history']) {
+                                                        $has_any = true;
+                                                        echo '<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-10 px-2.5 py-1 rounded-pill small fw-800"><i class="fas fa-history me-1"></i>History</span>';
+                                                    }
+                                                    if (!$has_any) {
+                                                        echo '<span class="text-muted small fw-600"><i class="fas fa-lock me-1"></i>Read-Only Access</span>';
+                                                    }
+                                                    ?>
                                                 </div>
                                             </td>
                                             <td data-label="Actions" class="text-end">
@@ -202,6 +182,10 @@ if ($active_school_id) {
                                                     <button class="btn btn-sm btn-outline-primary" title="Assign <?php echo get_label('Class'); ?> & <?php echo get_label('Subject'); ?>"
                                                         onclick="openAssign(<?php echo $as['detail_id']; ?>, '<?php echo addslashes($as['full_name']); ?>')">
                                                         <i class="fas fa-graduation-cap"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-info" title="Manage Permissions"
+                                                        onclick="togglePermissionsRow(<?php echo $as['detail_id']; ?>)">
+                                                        <i class="fas fa-shield-halved"></i>
                                                     </button>
                                                     
                                                     <?php if($as['status'] === 'active'): ?>
@@ -214,9 +198,97 @@ if ($active_school_id) {
                                                         </button>
                                                     <?php endif; ?>
                                                     
-                                                    <button class="btn btn-sm btn-outline-danger" title="Remove Permanently" onclick="manageStaff(<?php echo $as['detail_id']; ?>, 'delete')">
+                                                    <button class="btn btn-sm btn-outline-danger" title="Remove Permanently" onclick="confirmDeleteStaff(<?php echo $as['detail_id']; ?>, '<?php echo addslashes($as['full_name']); ?>')">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- Collapsible Permissions Panel Row -->
+                                        <tr id="perm-expand-<?php echo $as['detail_id']; ?>" class="d-none bg-light border-0 animate-fade">
+                                            <td colspan="5" class="p-0 border-0">
+                                                <div class="expand-wrapper px-4 py-3 bg-light border-bottom border-top">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <i class="fas fa-shield-halved text-primary"></i>
+                                                            <h6 class="fw-bold mb-0 text-dark" style="font-size:0.9rem;">Manage Module Permissions for <span class="text-primary"><?php echo htmlspecialchars($as['full_name']); ?></span></h6>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-light border rounded-pill px-3 fw-bold" onclick="togglePermissionsRow(<?php echo $as['detail_id']; ?>)" style="font-size:0.75rem;">
+                                                            <i class="fas fa-times me-1"></i> Close Panel
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    <div class="row g-3">
+                                                        <!-- Manage Pupils -->
+                                                        <div class="col-md-6 col-lg-3">
+                                                            <div class="p-3 bg-white rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between">
+                                                                <div>
+                                                                    <div class="fw-800 text-dark mb-1" style="font-size:0.85rem;">Manage <?php echo get_label('Pupils'); ?></div>
+                                                                    <div class="text-muted extra-small" style="font-size:0.72rem; line-height: 1.4;">Allows registering, editing, and promoting <?php echo strtolower(get_label('Pupils')); ?>.</div>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-3 mb-0">
+                                                                    <input class="form-check-input" type="checkbox" role="switch" 
+                                                                           id="chk-stu-<?php echo $as['detail_id']; ?>" 
+                                                                           <?php echo $as['can_manage_students'] ? 'checked' : ''; ?>
+                                                                           onchange="togglePermissionAjax(<?php echo $as['detail_id']; ?>, 'can_manage_students', this.checked, 'stu')"
+                                                                           style="width: 2.0rem; height: 1.05rem; cursor: pointer;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Manage Academics -->
+                                                        <div class="col-md-6 col-lg-3">
+                                                            <div class="p-3 bg-white rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between">
+                                                                <div>
+                                                                    <div class="fw-800 text-dark mb-1" style="font-size:0.85rem;">Manage Academics</div>
+                                                                    <div class="text-muted extra-small" style="font-size:0.72rem; line-height: 1.4;">Configure academic structures like <?php echo strtolower(get_label('Classes')); ?>, <?php echo strtolower(get_label('Subjects')); ?>, and terms.</div>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-3 mb-0">
+                                                                    <input class="form-check-input" type="checkbox" role="switch" 
+                                                                           id="chk-acad-<?php echo $as['detail_id']; ?>" 
+                                                                           <?php echo $as['can_manage_academics'] ? 'checked' : ''; ?>
+                                                                           onchange="togglePermissionAjax(<?php echo $as['detail_id']; ?>, 'can_manage_academics', this.checked, 'acad')"
+                                                                           style="width: 2.0rem; height: 1.05rem; cursor: pointer;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- CBT Exams -->
+                                                        <?php if (strpos($active_school['feature_access'] ?? '', 'CBT_EXAMS') !== false): ?>
+                                                        <div class="col-md-6 col-lg-3">
+                                                            <div class="p-3 bg-white rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between border-warning-subtle">
+                                                                <div>
+                                                                    <div class="fw-800 text-warning mb-1 d-flex align-items-center gap-1" style="font-size:0.85rem;"><i class="fas fa-bolt"></i> Elite Builder Access</div>
+                                                                    <div class="text-muted extra-small" style="font-size:0.72rem; line-height: 1.4;">Allows compiling examinations, generating test papers, and building question CBTs.</div>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-3 mb-0">
+                                                                    <input class="form-check-input border-warning" type="checkbox" role="switch" 
+                                                                           id="chk-cbt-<?php echo $as['detail_id']; ?>" 
+                                                                           <?php echo $as['can_manage_cbt'] ? 'checked' : ''; ?>
+                                                                           onchange="togglePermissionAjax(<?php echo $as['detail_id']; ?>, 'can_manage_cbt', this.checked, 'cbt')"
+                                                                           style="width: 2.0rem; height: 1.05rem; cursor: pointer;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <?php endif; ?>
+
+                                                        <!-- Result History -->
+                                                        <div class="col-md-6 col-lg-3">
+                                                            <div class="p-3 bg-white rounded-4 border shadow-sm h-100 d-flex flex-column justify-content-between border-info-subtle">
+                                                                <div>
+                                                                    <div class="fw-800 text-info mb-1 d-flex align-items-center gap-1" style="font-size:0.85rem;"><i class="fas fa-history"></i> Edit Result History</div>
+                                                                    <div class="text-muted extra-small" style="font-size:0.72rem; line-height: 1.4;">Allows updates and corrections to historical published termly results.</div>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-3 mb-0">
+                                                                    <input class="form-check-input border-info" type="checkbox" role="switch" 
+                                                                           id="chk-hist-<?php echo $as['detail_id']; ?>" 
+                                                                           <?php echo $as['can_edit_history'] ? 'checked' : ''; ?>
+                                                                           onchange="togglePermissionAjax(<?php echo $as['detail_id']; ?>, 'can_edit_history', this.checked, 'hist')"
+                                                                           style="width: 2.0rem; height: 1.05rem; cursor: pointer;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -327,6 +399,8 @@ if ($active_school_id) {
             </div>
         </div>
     </div>
+
+
 
 
     <script>
@@ -445,8 +519,8 @@ if ($active_school_id) {
             });
         }
 
-        // Toggle Staff Permissions
-        function togglePermission(detailId, permission, enabled, typePrefix) {
+        // Toggle Staff Permissions via AJAX and update badges live
+        function togglePermissionAjax(detailId, permission, enabled, typePrefix) {
             const csrfToken = typeof EDUREMARKS_CSRF_TOKEN !== 'undefined' ? EDUREMARKS_CSRF_TOKEN : '';
             fetch('../ajax/toggle_staff_permission.php', {
                 method: 'POST',
@@ -456,19 +530,69 @@ if ($active_school_id) {
                 },
                 body: `staff_detail_id=${detailId}&permission=${permission}&enabled=${enabled ? 1 : 0}&csrf_token=${csrfToken}`
             }).then(r => r.json()).then(d => {
-                const labelTitle = permission === 'can_manage_students' ? 'Manage Students' : 'Manage Academics';
-                const label = document.querySelector(`label[for="perm-${typePrefix}-${detailId}"]`);
                 if (d.success) {
                     Notif.show(d.message, 'success');
-                    if (label) label.innerHTML = `${labelTitle}: ${enabled ? '<span class="text-success fw-bold">ON</span>' : '<span class="text-muted">OFF</span>'}`;
+                    updateBadges(detailId);
                 } else {
                     Notif.show(d.message, 'error');
-                    document.getElementById(`perm-${typePrefix}-${detailId}`).checked = !enabled;
+                    const targetEl = document.getElementById(`chk-${typePrefix}-${detailId}`);
+                    if (targetEl) targetEl.checked = !enabled;
                 }
             }).catch(() => {
                 Notif.show('Network error', 'error');
-                document.getElementById(`perm-${typePrefix}-${detailId}`).checked = !enabled;
+                const targetEl = document.getElementById(`chk-${typePrefix}-${detailId}`);
+                if (targetEl) targetEl.checked = !enabled;
             });
+        }
+
+        // Toggle Permissions Row Collapsible Panel
+        function togglePermissionsRow(detailId) {
+            const row = document.getElementById('perm-expand-' + detailId);
+            if (row) {
+                if (row.classList.contains('d-none')) {
+                    // Close any other open panels first
+                    document.querySelectorAll('[id^="perm-expand-"]').forEach(r => r.classList.add('d-none'));
+                    row.classList.remove('d-none');
+                } else {
+                    row.classList.add('d-none');
+                }
+            }
+        }
+
+        // Update active badges inside parent table cell in real-time
+        function updateBadges(detailId) {
+            const isStu = document.getElementById('chk-stu-' + detailId)?.checked;
+            const isAcad = document.getElementById('chk-acad-' + detailId)?.checked;
+            const isCbt = document.getElementById('chk-cbt-' + detailId)?.checked;
+            const isHist = document.getElementById('chk-hist-' + detailId)?.checked;
+            
+            const container = document.getElementById('perm-badges-' + detailId);
+            if (!container) return;
+            
+            let html = '';
+            let hasAny = false;
+            
+            if (isStu) {
+                hasAny = true;
+                html += `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 px-2.5 py-1 rounded-pill small fw-800 me-1"><i class="fas fa-user-graduate me-1"></i><?php echo get_label('Pupils'); ?></span>`;
+            }
+            if (isAcad) {
+                hasAny = true;
+                html += `<span class="badge bg-indigo bg-opacity-10 text-indigo border border-indigo border-opacity-10 px-2.5 py-1 rounded-pill small fw-800 me-1" style="background-color: rgba(99, 102, 241, 0.1) !important; color: #6366f1 !important; border-color: rgba(99, 102, 241, 0.2) !important;"><i class="fas fa-book-open me-1"></i>Academics</span>`;
+            }
+            if (isCbt) {
+                hasAny = true;
+                html += `<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-10 px-2.5 py-1 rounded-pill small fw-800 me-1"><i class="fas fa-bolt me-1"></i>Elite Builder</span>`;
+            }
+            if (isHist) {
+                hasAny = true;
+                html += `<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-10 px-2.5 py-1 rounded-pill small fw-800"><i class="fas fa-history me-1"></i>History</span>`;
+            }
+            if (!hasAny) {
+                html += `<span class="text-muted small fw-600"><i class="fas fa-lock me-1"></i>Read-Only Access</span>`;
+            }
+            
+            container.innerHTML = `<div class="d-flex flex-wrap gap-1 align-items-center">${html}</div>`;
         }
 
     </script>

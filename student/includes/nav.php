@@ -1,6 +1,17 @@
 <?php
 // student/includes/nav.php — Unified student portal navigation
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Determine if Higher Ed / Tertiary
+$type = strtolower($student['school_type'] ?? '');
+$is_higher_ed = (
+    strpos($type, 'tertiary') !== false || 
+    strpos($type, 'vocational') !== false || 
+    strpos($type, 'polytechnic') !== false || 
+    strpos($type, 'university') !== false || 
+    strpos($type, 'college') !== false
+);
+
 // Use the student's registered school logo for branding in their portal
 $school_logo_path = !empty($student['logo_path']) ? $student['logo_path'] : get_setting('sidebar_logo', 'img/logo.png');
 $logo_src = (strpos($school_logo_path, 'http') === 0) ? $school_logo_path : '../' . $school_logo_path;
@@ -48,6 +59,10 @@ $stu_photo = $student['image_path'] ? '../' . $student['image_path'] : '../img/d
             <i class="fas fa-file-alt"></i>
             <span><?php echo get_label('Report Sheets'); ?></span>
         </a>
+        <a href="transcript.php" class="stu-nav-item <?php echo $current_page == 'transcript.php' ? 'active' : ''; ?>">
+            <i class="fas fa-scroll"></i>
+            <span><?php echo $is_higher_ed ? 'Transcript' : get_label('Broadsheet'); ?></span>
+        </a>
         <a href="assessments.php" class="stu-nav-item <?php echo $current_page == 'assessments.php' ? 'active' : ''; ?>">
             <i class="fas fa-clipboard-check"></i>
             <span>Assessments</span>
@@ -93,6 +108,10 @@ $stu_photo = $student['image_path'] ? '../' . $student['image_path'] : '../img/d
     <a href="reports.php" class="stu-tab <?php echo in_array($current_page, ['reports.php', 'view_report.php']) ? 'active' : ''; ?>">
         <i class="fas fa-file-alt"></i>
         <span><?php echo (get_label('Subject') === 'Course') ? 'Results' : 'Reports'; ?></span>
+    </a>
+    <a href="transcript.php" class="stu-tab <?php echo $current_page == 'transcript.php' ? 'active' : ''; ?>">
+        <i class="fas fa-scroll"></i>
+        <span><?php echo $is_higher_ed ? 'Transcript' : 'Broadsheet'; ?></span>
     </a>
     <a href="assessments.php" class="stu-tab <?php echo $current_page == 'assessments.php' ? 'active' : ''; ?>">
         <i class="fas fa-clipboard-check"></i>

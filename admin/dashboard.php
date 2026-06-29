@@ -318,6 +318,51 @@ if ($active_school_id) {
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Actions -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <a href="../user/generate_transcript.php" class="glass-card p-4 text-decoration-none d-flex flex-column align-items-center text-center position-relative overflow-hidden h-100" style="border-radius: 18px; background: linear-gradient(135deg, #1a2b4a 0%, #2d5faa 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(26,43,74,0.15);">
+                        <div class="position-absolute top-0 end-0 p-3 opacity-10"><i class="fas fa-scroll fa-4x"></i></div>
+                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px;">
+                            <i class="fas fa-scroll" style="font-size: 1.3rem;"></i>
+                        </div>
+                        <div class="fw-800 mb-1" style="font-size: 0.85rem;"><?php echo get_label('Broadsheet'); ?></div>
+                        <div class="opacity-75" style="font-size: 0.68rem;">Generate student transcripts</div>
+                    </a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <a href="students.php" class="glass-card p-4 text-decoration-none d-flex flex-column align-items-center text-center position-relative overflow-hidden h-100" style="border-radius: 18px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(5,150,105,0.15);">
+                        <div class="position-absolute top-0 end-0 p-3 opacity-10"><i class="fas fa-user-graduate fa-4x"></i></div>
+                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px;">
+                            <i class="fas fa-user-graduate" style="font-size: 1.3rem;"></i>
+                        </div>
+                        <div class="fw-800 mb-1" style="font-size: 0.85rem;"><?php echo get_label('Pupils'); ?> Records</div>
+                        <div class="opacity-75" style="font-size: 0.68rem;">Manage student profiles</div>
+                    </a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <a href="academics.php" class="glass-card p-4 text-decoration-none d-flex flex-column align-items-center text-center position-relative overflow-hidden h-100" style="border-radius: 18px; background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(124,58,237,0.15);">
+                        <div class="position-absolute top-0 end-0 p-3 opacity-10"><i class="fas fa-book-open fa-4x"></i></div>
+                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px;">
+                            <i class="fas fa-book-open" style="font-size: 1.3rem;"></i>
+                        </div>
+                        <div class="fw-800 mb-1" style="font-size: 0.85rem;">Academics</div>
+                        <div class="opacity-75" style="font-size: 0.68rem;"><?php echo get_label('Classes'); ?>, <?php echo strtolower(get_label('Terms')); ?> & <?php echo strtolower(get_label('Subjects')); ?></div>
+                    </a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <a href="id_cards.php" class="glass-card p-4 text-decoration-none d-flex flex-column align-items-center text-center position-relative overflow-hidden h-100" style="border-radius: 18px; background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); color: #fff; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(234,88,12,0.15);">
+                        <div class="position-absolute top-0 end-0 p-3 opacity-10"><i class="fas fa-id-card fa-4x"></i></div>
+                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px;">
+                            <i class="fas fa-id-card" style="font-size: 1.3rem;"></i>
+                        </div>
+                        <div class="fw-800 mb-1" style="font-size: 0.85rem;">ID Cards</div>
+                        <div class="opacity-75" style="font-size: 0.68rem;">Generate student ID cards</div>
+                    </a>
+                </div>
+            </div>
+
             <?php include '../includes/dashboard_footer.php'; ?>
         </main>
     </div>

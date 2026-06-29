@@ -185,7 +185,7 @@ $display_history = array_reverse($chronological_history, true);
                                 <div class="course-row text-muted extra-small fw-800 uppercase tracking-1 pb-2 border-bottom">
                                     <span><?php echo get_label('Subject'); ?></span>
                                     <span class="text-center"><?php echo $is_higher_ed ? 'Units' : 'C.A'; ?></span>
-                                    <span class="text-center"><?php echo $is_higher_ed ? 'Grade' : 'Exam'; ?></span>
+                                    <span class="text-center">Grade</span>
                                     <span class="text-center">Total</span>
                                 </div>
                                 <?php foreach ($term['results'] as $res): ?>
@@ -198,13 +198,9 @@ $display_history = array_reverse($chronological_history, true);
                                             <?php echo $is_higher_ed ? $res['credit_units'] : ($res['ca1'] + $res['ca2']); ?>
                                         </div>
                                         <div class="text-center d-flex justify-content-center">
-                                            <?php if ($is_higher_ed): ?>
-                                                <div class="grade-badge grade-<?php echo substr($res['grade'], 0, 1); ?>">
-                                                    <?php echo $res['grade']; ?>
-                                                </div>
-                                            <?php else: ?>
-                                                <span class="small fw-700"><?php echo $res['exam']; ?></span>
-                                            <?php endif; ?>
+                                            <div class="grade-badge grade-<?php echo strtoupper(substr($res['grade'], 0, 1)); ?>">
+                                                <?php echo $res['grade']; ?>
+                                            </div>
                                         </div>
                                         <div class="text-center course-total">
                                             <?php echo $res['total']; ?>%
@@ -216,7 +212,7 @@ $display_history = array_reverse($chronological_history, true);
                             <div class="stats-stripe">
                                 <?php if ($is_higher_ed): ?>
                                     <div class="stat-node">
-                                        <span class="stat-label">Semester GPA</span>
+                                        <span class="stat-label"><?php echo get_label('Term'); ?> GPA</span>
                                         <span class="stat-value"><?php echo number_format($term['gpa'], 2); ?></span>
                                     </div>
                                     <div class="stat-node">

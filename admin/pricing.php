@@ -217,7 +217,7 @@ $public_key = $paystack['public_key'];
                                             <option value="1 Year Unlimited">1 Year Institutional Unlimited</option>
                                             <option value="1 Session Unlimited">1 Session Institutional Unlimited</option>
                                             <option value="1 Term Unlimited">1 Term Institutional Unlimited</option>
-                                            <option value="Semester Plan">Semester Based Plan</option>
+                                            <option value="Term Plan"><?php echo get_label('Term'); ?> Based Plan</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">

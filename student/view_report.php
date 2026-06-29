@@ -83,6 +83,139 @@ foreach ($scQ->fetchAll() as $sc) {
     $allScores[$sc['student_id']][$sc['subject_id']] = $sc;
 }
 
+// Check if current student has any results for this term/session
+$myScores = $allScores[$student_id] ?? [];
+$hasResults = !empty($myScores);
+
+// If no results for this student in this term/session, show professional message
+if (!$hasResults) {
+    $logoSrc = $cls['logo'] ? '../' . ltrim($cls['logo'], '/') : '';
+    $term_label = get_label('Term');
+    $session_label = get_label('Session');
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>No Results — <?= e($student_data['full_name']) ?></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #f1f5f9; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .no-result-card {
+            background: #fff; border-radius: 20px; max-width: 520px; width: 100%;
+            box-shadow: 0 8px 40px rgba(0,0,0,.08); overflow: hidden; text-align: center;
+        }
+        .no-result-header {
+            background: linear-gradient(135deg, #1a2b4a 0%, #2d5faa 100%);
+            padding: 40px 30px 50px; position: relative;
+        }
+        .no-result-header::after {
+            content: ''; position: absolute; bottom: -20px; left: 0; right: 0;
+            height: 40px; background: #fff; border-radius: 50% 50% 0 0;
+        }
+        .school-logo {
+            width: 70px; height: 70px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);
+            margin: 0 auto 15px; overflow: hidden; background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .school-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .school-name { color: #fff; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+        .school-motto { color: rgba(255,255,255,0.7); font-size: 0.8rem; font-style: italic; }
+        .no-result-body { padding: 30px 30px 40px; }
+        .no-result-icon {
+            width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px;
+            background: #fef3cd; display: flex; align-items: center; justify-content: center;
+        }
+        .no-result-icon i { font-size: 2rem; color: #f59e0b; }
+        .no-result-title { font-size: 1.2rem; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
+        .no-result-text { color: #64748b; font-size: 0.9rem; line-height: 1.6; margin-bottom: 8px; }
+        .no-result-meta {
+            background: #f8fafc; border-radius: 12px; padding: 15px 20px; margin: 20px 0;
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+        }
+        .meta-chip {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 14px;
+            font-size: 0.78rem; color: #475569; display: flex; align-items: center; gap: 6px;
+        }
+        .meta-chip i { color: #2d5faa; font-size: 0.75rem; }
+        .meta-chip strong { color: #1e293b; }
+        .btn-group-bottom { display: flex; gap: 10px; justify-content: center; margin-top: 25px; }
+        .btn-premium {
+            border: none; border-radius: 12px; padding: 12px 24px; font-weight: 700;
+            font-size: 0.85rem; cursor: pointer; text-decoration: none; display: inline-flex;
+            align-items: center; gap: 8px; transition: all 0.2s;
+        }
+        .btn-primary-grad { background: linear-gradient(135deg, #1a2b4a, #2d5faa); color: #fff; }
+        .btn-primary-grad:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(45,95,170,0.3); color: #fff; }
+        .btn-outline-soft { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-outline-soft:hover { background: #e2e8f0; color: #1e293b; }
+        .student-badge {
+            display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9;
+            border-radius: 10px; padding: 10px 16px; margin-top: 15px;
+        }
+        .student-badge img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; }
+        .student-badge .stu-info { text-align: left; }
+        .student-badge .stu-name { font-weight: 700; font-size: 0.85rem; color: #1e293b; }
+        .student-badge .stu-adm { font-size: 0.72rem; color: #64748b; }
+        @media(max-width: 480px) {
+            .no-result-header { padding: 30px 20px 40px; }
+            .no-result-body { padding: 20px; }
+            .btn-group-bottom { flex-direction: column; }
+        }
+    </style>
+    </head>
+    <body>
+    <div class="no-result-card">
+        <div class="no-result-header">
+            <div class="school-logo">
+                <?php if ($logoSrc): ?>
+                    <img src="<?= $logoSrc ?>" alt="Logo"/>
+                <?php else: ?>
+                    <i class="fas fa-graduation-cap" style="color: rgba(255,255,255,0.5); font-size: 1.5rem;"></i>
+                <?php endif; ?>
+            </div>
+            <div class="school-name"><?= e($cls['school_name']) ?></div>
+            <?php if ($cls['motto']): ?><div class="school-motto">"<?= e($cls['motto']) ?>"</div><?php endif; ?>
+        </div>
+        <div class="no-result-body">
+            <div class="no-result-icon">
+                <i class="fas fa-file-circle-exclamation"></i>
+            </div>
+            <div class="no-result-title">No Results Available</div>
+            <div class="no-result-text">
+                Academic results for this period have not yet been published. Please check back later or contact your <?= strtolower(get_label('Head Teacher')); ?> for assistance.
+            </div>
+            <div class="no-result-meta">
+                <div class="meta-chip"><i class="fas fa-calendar"></i> <strong><?= e($session_name); ?></strong></div>
+                <div class="meta-chip"><i class="fas fa-clock"></i> <strong><?= e(get_label($cls['term'])); ?></strong></div>
+                <div class="meta-chip"><i class="fas fa-layer-group"></i> <strong><?= e($cls['name']); ?></strong></div>
+            </div>
+            <div class="student-badge">
+                <img src="<?= $student_data['image_path'] ? '../'.e($student_data['image_path']) : '../img/default_picture.png' ?>" alt="" onerror="this.src='../img/default_picture.png'">
+                <div class="stu-info">
+                    <div class="stu-name"><?= e($student_data['full_name']) ?></div>
+                    <div class="stu-adm"><?= e($student_data['admission_no']) ?></div>
+                </div>
+            </div>
+            <div class="btn-group-bottom">
+                <a href="reports.php" class="btn-premium btn-primary-grad">
+                    <i class="fas fa-arrow-left"></i> Back to Reports
+                </a>
+                <a href="dashboard.php" class="btn-premium btn-outline-soft">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
 // All skills/traits
 $allSkills = [];
 $skQ = $pdo->prepare("SELECT * FROM student_traits WHERE class_id = ? AND session_id = ? AND term_id = ? AND student_id IN ($inIds)");
@@ -96,7 +229,7 @@ function ordinal(int $n): string {
     return match($n % 10) { 1 => $n . 'st', 2 => $n . 'nd', 3 => $n . 'rd', default => $n . 'th' };
 }
 $school_type = strtolower($active_school['school_type'] ?? '');
-$is_higher_ed = (str_contains($school_type, 'tertiary') || str_contains($school_type, 'vocational') || str_contains($school_type, 'university'));
+$is_higher_ed = (str_contains($school_type, 'tertiary') || str_contains($school_type, 'vocational') || str_contains($school_type, 'polytechnic') || str_contains($school_type, 'university') || str_contains($school_type, 'college'));
 
 function calcGrade($total, $is_higher_ed = false) {
     if ($is_higher_ed) {
@@ -358,8 +491,12 @@ body { background: #f1f5f9; font-family: Arial, Helvetica, sans-serif; overflow-
           <thead>
             <tr>
               <th class="subj-hd" style="width:25%;"><?= strtoupper(get_label('Subject')) ?></th>
-              <th style="width:10%;">CA1 (20)</th>
-              <th style="width:10%;">CA2 (20)</th>
+              <?php if ($is_higher_ed): ?>
+                <th style="width:10%;">CA (40)</th>
+              <?php else: ?>
+                <th style="width:10%;">CA1 (20)</th>
+                <th style="width:10%;">CA2 (20)</th>
+              <?php endif; ?>
               <th style="width:10%;">EXAM (60)</th>
               <th style="width:10%;">TOTAL</th>
               <th style="width:8%;">POS</th>
@@ -376,8 +513,12 @@ body { background: #f1f5f9; font-family: Arial, Helvetica, sans-serif; overflow-
             ?>
             <tr>
               <td class="subj-td"><?= e($sub['name']) ?></td>
-              <td><?= $sc ? $sc['ca1'] : '—' ?></td>
-              <td><?= $sc ? $sc['ca2'] : '—' ?></td>
+              <?php if ($is_higher_ed): ?>
+                <td><?= $sc ? $sc['ca1'] : '—' ?></td>
+              <?php else: ?>
+                <td><?= $sc ? $sc['ca1'] : '—' ?></td>
+                <td><?= $sc ? $sc['ca2'] : '—' ?></td>
+              <?php endif; ?>
               <td><?= $sc ? $sc['exam'] : '—' ?></td>
               <td><?= $tot !== null ? $tot : '—' ?></td>
               <td><?= $tot !== null ? ordinal($spos) : '—' ?></td>
@@ -389,7 +530,14 @@ body { background: #f1f5f9; font-family: Arial, Helvetica, sans-serif; overflow-
         </table>
 
         <div class="grade-note">
-          <span><strong>Scale:</strong> A1=75-100 · B2=70-74 · B3=65-69 · C4=60-64 · C5=55-59 · C6=50-54 · D7=45-49 · E8=40-44 · F9=0-39</span>
+          <span>
+            <strong>Scale:</strong> 
+            <?php if ($is_higher_ed): ?>
+              A=70-100 · B=60-69 · C=50-59 · D=45-49 · E=40-44 · F=0-39
+            <?php else: ?>
+              A1=75-100 · B2=70-74 · B3=65-69 · C4=60-64 · C5=55-59 · C6=50-54 · D7=45-49 · E8=40-44 · F9=0-39
+            <?php endif; ?>
+          </span>
           <span><strong><?= get_label('Subjects') ?>: <?= count($subjects) ?></strong></span>
         </div>
 

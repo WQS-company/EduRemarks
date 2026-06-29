@@ -2,6 +2,16 @@
 // student/performance.php
 require_once 'auth.php';
 
+// Determine if Higher Ed / Tertiary
+$type = strtolower($student['school_type'] ?? '');
+$is_higher_ed = (
+    strpos($type, 'tertiary') !== false || 
+    strpos($type, 'vocational') !== false || 
+    strpos($type, 'polytechnic') !== false || 
+    strpos($type, 'university') !== false || 
+    strpos($type, 'college') !== false
+);
+
 // Fetch school-specific sessions
 $sessions = $pdo->prepare("SELECT id, name FROM academic_sessions WHERE school_id = ? ORDER BY created_at DESC");
 $sessions->execute([$school_id]);
@@ -191,8 +201,12 @@ if ($class_id_for_traits) {
                         </div>
                         <div class="d-flex justify-content-between mt-2" style="font-size:0.75rem;">
                             <div class="d-flex gap-3">
-                                <span class="text-muted fw-600">CA1: <span class="text-dark fw-800"><?php echo $res['ca1']; ?></span></span>
-                                <span class="text-muted fw-600">CA2: <span class="text-dark fw-800"><?php echo $res['ca2']; ?></span></span>
+                                <?php if ($is_higher_ed): ?>
+                                    <span class="text-muted fw-600">CA: <span class="text-dark fw-800"><?php echo $res['ca1']; ?></span></span>
+                                <?php else: ?>
+                                    <span class="text-muted fw-600">CA1: <span class="text-dark fw-800"><?php echo $res['ca1']; ?></span></span>
+                                    <span class="text-muted fw-600">CA2: <span class="text-dark fw-800"><?php echo $res['ca2']; ?></span></span>
+                                <?php endif; ?>
                                 <span class="text-muted fw-600">Exam: <span class="text-dark fw-800"><?php echo $res['exam']; ?></span></span>
                             </div>
                             <span class="text-muted extra-small fw-800 uppercase tracking-1" style="color: <?php echo $color; ?> !important; opacity: 0.7;"><?php echo $total >= 50 ? 'Successful Node' : 'Optimization Required'; ?></span>
@@ -230,14 +244,23 @@ if ($class_id_for_traits) {
                 <div class="stu-card">
                     <div class="section-head" style="font-size:0.95rem;"><i class="fas fa-palette"></i> Assessment Key</div>
                     <div class="d-flex flex-column gap-2">
-                        <?php foreach ([
-                            ['#10b981', 'Excellent (80-100%)'],
-                            ['#3b82f6', 'Very Good (70-79%)'],
-                            ['#f59e0b', 'Good (60-69%)'],
-                            ['#8b5cf6', 'Average (50-59%)'],
-                            ['#06b6d4', 'Pass (40-49%)'],
-                            ['#ef4444', 'Needs Review (<40%)']
-                        ] as $item): ?>
+                        <?php
+                        $legend = $is_higher_ed ? [
+                            ['#10b981', 'Excellent (A: 70-100%)'],
+                            ['#3b82f6', 'Very Good (B: 60-69%)'],
+                            ['#f59e0b', 'Good (C: 50-59%)'],
+                            ['#8b5cf6', 'Fair (D: 45-49%)'],
+                            ['#06b6d4', 'Pass (E: 40-44%)'],
+                            ['#ef4444', 'Fail (F: 0-39%)']
+                        ] : [
+                            ['#10b981', 'Excellent (A1: 75-100%)'],
+                            ['#3b82f6', 'Very Good (B2: 70-74%)'],
+                            ['#f59e0b', 'Good (B3-C4: 60-69%)'],
+                            ['#8b5cf6', 'Credit (C5-C6: 50-59%)'],
+                            ['#06b6d4', 'Pass (D7-E8: 40-49%)'],
+                            ['#ef4444', 'Fail (F9: 0-39%)']
+                        ];
+                        foreach ($legend as $item): ?>
                         <div class="d-flex align-items-center gap-2" style="font-size:0.78rem;">
                             <span style="width:12px; height:12px; background:<?php echo $item[0]; ?>; border-radius:3px; flex-shrink:0;"></span>
                             <span class="fw-600"><?php echo $item[1]; ?></span>

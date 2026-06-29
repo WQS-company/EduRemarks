@@ -60,10 +60,10 @@ $section_datalist = array_column($registered_sections, 'section_name');
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .builder-row { background:#fff; border:1px solid #eef2f7; border-radius:16px; padding:24px; margin-bottom:16px; transition:all .3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .builder-row:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(31,60,136,.06); border-color: #dbeafe; }
-        .btn-add-row { border:2px dashed #2D6CDF; color:#2D6CDF; background:transparent; border-radius:14px; width:100%; padding:14px; font-weight:700; transition:.2s; }
-        .btn-add-row:hover { background:#f0f4ff; border-style: solid; }
+        .builder-row { background:#ffffff; border:1px solid rgba(226, 232, 240, 0.8); border-radius:20px; padding:24px; margin-bottom:16px; transition:all .3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
+        .builder-row:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(45, 108, 221, 0.05); border-color: #2D6CDF; }
+        .btn-add-row { border:2px dashed #2D6CDF; color:#2D6CDF; background:transparent; border-radius:14px; width:100%; padding:14px; font-weight:700; transition:all 0.2s ease-in-out; }
+        .btn-add-row:hover { background:#f0f4ff; border-style: solid; transform: translateY(-1px); }
         .subject-badge { font-size:.72rem; padding:4px 10px; border-radius:20px; background:#EEF2FB; color:#1F3C88; border:1px solid #d0daff; font-weight:600; margin:2px; display:inline-block; }
         .tab-pane { animation: fadeInUp .3s ease; }
         @keyframes fadeInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
@@ -73,6 +73,9 @@ $section_datalist = array_column($registered_sections, 'section_name');
         .existing-item .item-info { flex-grow:1; min-width:0; }
         .existing-item .item-name { font-weight:700; font-size:1rem; color:#1e293b; }
         .existing-item .item-meta { font-size:.8rem; color:#64748b; margin-top:2px; }
+        
+        .form-control, .form-select { border-radius: 10px; border: 1.5px solid #e2e8f0; transition: all 0.2s ease-in-out; }
+        .form-control:focus, .form-select:focus { border-color: #2D6CDF; box-shadow: 0 0 0 4px rgba(45, 108, 221, 0.1); background-color: #fff; }
         
         @media (max-width: 576px) {
             .existing-item { padding:10px; }
@@ -197,7 +200,7 @@ $section_datalist = array_column($registered_sections, 'section_name');
                                             if ($s['department_id']) {
                                                 $deptName = 'Unknown';
                                                 foreach ($registered_sections as $rs) if ($rs['id'] == $s['department_id']) $deptName = $rs['section_name'];
-                                                echo ' &bull; Department: <span class="text-primary fw-600">' . htmlspecialchars($deptName) . '</span>';
+                                                echo ' &bull; ' . get_label('Section') . ': <span class="text-primary fw-600">' . htmlspecialchars($deptName) . '</span>';
                                             }
                                             ?>
                                         <?php endif; ?>
@@ -317,7 +320,7 @@ $section_datalist = array_column($registered_sections, 'section_name');
 
                                 <div class="mt-4 p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3">
                                     <h6 class="fw-bold text-warning-emphasis small"><i class="fas fa-rocket me-2"></i>Promote <?php echo get_label('Pupils'); ?></h6>
-                                    <p class="text-muted" style="font-size:0.75rem;">Transition <?php echo strtolower(get_label('Pupils')); ?> from their current <?php echo strtolower(get_label('Class')); ?> to the next sequence level (e.g., Level 100 &rarr; Level 200). This is usually done at the end of the last <?php echo strtolower(get_label('Term')); ?>.</p>
+                                    <p class="text-muted" style="font-size:0.75rem;">Transition <?php echo strtolower(get_label('Pupils')); ?> from their current <?php echo strtolower(get_label('Class')); ?> to the next sequence (e.g., <?php echo get_label('Class'); ?> 1 &rarr; <?php echo get_label('Class'); ?> 2). This is usually done at the end of the last <?php echo strtolower(get_label('Term')); ?>.</p>
                                     <button class="btn btn-warning btn-sm w-100 fw-bold rounded-pill" onclick="openPromotionModal()">
                                         START AUTOMATIC PROMOTION
                                     </button>
@@ -444,19 +447,20 @@ $section_datalist = array_column($registered_sections, 'section_name');
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const IS_COURSE = <?php echo $is_course ? 'true' : 'false'; ?>;
-const LABEL     = IS_COURSE ? 'Course' : 'Subject';
+const LABEL     = '<?php echo get_label("Subject"); ?>';
 const CLASS_NAME_LABEL = '<?php echo get_label("Class Name"); ?>';
 const SECTION_LABEL    = '<?php echo get_label("Section"); ?>';
+const TERM_LABEL       = '<?php echo get_label("Term"); ?>';
 const SUBJECT_NAME_LABEL = '<?php echo get_label("Subject Name"); ?>';
 const SUBJECT_CODE_LABEL = '<?php echo get_label("Subject Code"); ?>';
 const DEPT_OPTIONS = `<?php 
-    echo '<option value="">-- No Department --</option>';
+    echo '<option value="">-- No ' . get_label('Section') . ' --</option>';
     foreach ($registered_sections as $rs) {
         echo '<option value="'.$rs['id'].'">'.htmlspecialchars($rs['section_name']).'</option>';
     }
 ?>`;
 const SEMESTER_OPTIONS = `<?php 
-    echo '<option value="">-- No Semester --</option>';
+    echo '<option value="">-- No ' . get_label('Term') . ' --</option>';
     foreach ($active_terms as $at) {
         echo '<option value="'.$at['id'].'">'.get_label($at['name']).'</option>';
     }
@@ -467,13 +471,19 @@ let classRowId = 0, subRowId = 0;
 function addClassRow(id='', name='', code='', section='', seq='0') {
     const rid = ++classRowId;
     const codeField = IS_COURSE ? `<input type="hidden" value="${code || 'AUTO'}" data-field="code">` 
-                                : `<div class="col-md-2"><input class="form-control" placeholder="Code *" value="${code}" data-field="code"></div>`;
+                                : `<div class="col-md-2">
+                                     <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block">Code *</label>
+                                     <input class="form-control" placeholder="Code *" value="${code}" data-field="code">
+                                   </div>`;
     const sectionField = IS_COURSE ? `<input type="hidden" value="" data-field="section">`
-                                     : `<div class="col-md-3"><input class="form-control" placeholder="${SECTION_LABEL}" value="${section}" data-field="section" list="sectionList"></div>`;
+                                     : `<div class="col-md-3">
+                                          <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block">${SECTION_LABEL}</label>
+                                          <input class="form-control" placeholder="${SECTION_LABEL}" value="${section}" data-field="section" list="sectionList">
+                                        </div>`;
     const html = `<div class="builder-row" id="crow-${rid}">
         <div class="row g-3 align-items-center">
             <input type="hidden" name="class_id" value="${id}">
-            <div class="col-md-${IS_COURSE ? '8' : '3'}">
+            <div class="col-md-${IS_COURSE ? '8' : '4'}">
                 <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block">${CLASS_NAME_LABEL} *</label>
                 <input class="form-control" placeholder="${CLASS_NAME_LABEL} *" value="${name}" data-field="name">
             </div>
@@ -486,8 +496,8 @@ function addClassRow(id='', name='', code='', section='', seq='0') {
                     <input type="number" class="form-control bg-white border-start-0" placeholder="Seq" value="${seq}" data-field="seq">
                 </div>
             </div>
-            <div class="col-md-2 text-end pt-4">
-                <button class="btn btn-outline-danger border-0 rounded-circle" onclick="document.getElementById('crow-${rid}').remove()">
+            <div class="col-md-${IS_COURSE ? '2' : '1'} text-end pt-4">
+                <button class="btn btn-outline-danger border-0 rounded-circle p-0" onclick="document.getElementById('crow-${rid}').remove()" style="width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;">
                     <i class="fas fa-circle-minus fa-xl"></i>
                 </button>
             </div>
@@ -541,14 +551,14 @@ function addSubjectRow(id='', name='', code='', period='', credits='2', sem_id='
                 <input type="number" class="form-control" placeholder="Credits" value="${credits}" data-field="credits" min="1" max="10">
             </div>
             <div class="col-md-3">
-                <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block">Semester</label>
-                <select class="form-select" data-field="semester" title="Semester">
+                <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block"><?php echo get_label('Term'); ?></label>
+                <select class="form-select" data-field="semester" title="<?php echo get_label('Term'); ?>">
                     ${SEMESTER_OPTIONS}
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block">Department</label>
-                <select class="form-select" data-field="department" title="Department">
+                <label class="extra-small fw-800 text-muted text-uppercase mb-1 d-block">${SECTION_LABEL}</label>
+                <select class="form-select" data-field="department" title="${SECTION_LABEL}">
                     ${DEPT_OPTIONS}
                 </select>
             </div>
@@ -643,7 +653,7 @@ function openDeleteModal(id, type, name) {
     if(type === 'class') label = CLASS_NAME_LABEL.replace(' Name', '');
     else if(type === 'subject') label = LABEL;
     else if(type === 'session') label = 'Academic Session';
-    else if(type === 'term') label = 'Academic ' + (IS_COURSE ? 'Semester' : 'Term');
+    else if(type === 'term') label = 'Academic ' + TERM_LABEL;
     
     document.getElementById('deleteTypeLabel').textContent = label;
     document.getElementById('deleteItemName').textContent = name;

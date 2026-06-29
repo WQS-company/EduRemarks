@@ -52,6 +52,16 @@ $cls = [
     'pos_visible' => (bool)$show_pos
 ];
 
+// Detect school type (Tertiary vs K-12)
+$school_type_str = strtolower($active_school['school_type'] ?? '');
+$is_higher_ed = (
+    strpos($school_type_str, 'tertiary') !== false ||
+    strpos($school_type_str, 'vocational') !== false ||
+    strpos($school_type_str, 'polytechnic') !== false ||
+    strpos($school_type_str, 'university') !== false ||
+    strpos($school_type_str, 'college') !== false
+);
+
 // Students
 $stuConditions = "class_id = ? AND school_id = ?";
 $stuParams = [$class_id, $school_id];
@@ -170,7 +180,16 @@ function ordinal(int $n): string {
     };
 }
 
-function calcGrade($total) {
+function calcGrade($total, $is_higher_ed = false) {
+    if ($is_higher_ed) {
+        if ($total >= 70) return 'A';
+        if ($total >= 60) return 'B';
+        if ($total >= 50) return 'C';
+        if ($total >= 45) return 'D';
+        if ($total >= 40) return 'E';
+        if ($total > 0) return 'F';
+        return '-';
+    }
     if ($total >= 75) return 'A1';
     if ($total >= 70) return 'B2';
     if ($total >= 65) return 'B3';
@@ -184,12 +203,13 @@ function calcGrade($total) {
 }
 
 function calcRemark($grade) {
-    if ($grade === 'A1') return 'Excellent';
-    if ($grade === 'B2') return 'Very Good';
-    if ($grade === 'B3') return 'Good';
-    if ($grade === 'C4' || $grade === 'C5' || $grade === 'C6') return 'Credit';
-    if ($grade === 'D7' || $grade === 'E8') return 'Pass';
-    if ($grade === 'F9') return 'Fail';
+    $g = strtoupper(substr($grade, 0, 1));
+    if ($g === 'A') return 'Excellent';
+    if ($g === 'B') return 'Very Good';
+    if ($g === 'C') return 'Good';
+    if ($g === 'D') return 'Fair';
+    if ($g === 'E') return 'Pass';
+    if ($g === 'F') return 'Fail';
     return '-';
 }
 
@@ -537,7 +557,7 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
     $summary = $studentSummaries[$stu['id']];
     $stuPos  = $positions[$stu['id']] ?? 0;
     $posText = $stuPos ? ordinal($stuPos) : '—';
-    $finalGrade  = calcGrade($summary['avg']);
+    $finalGrade  = calcGrade($summary['avg'], $is_higher_ed);
     $wmTextEsc = addslashes($wmText);
 ?>
 <?php 
@@ -587,7 +607,7 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
           <span class="hdr-address"><?= nl2br(e($cls['school_address'])) ?></span>
         <?php endif; ?>
         <div class="divider-thin" style="margin-top:4px;"></div>
-        <span class="hdr-tag">Student Report Card</span>
+        <span class="hdr-tag"><?= e(get_label('Report Card')) ?></span>
       </div>
 
       <!-- Student photo -->
@@ -623,7 +643,7 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
         </div>
       </div>
       <div class="info-row">
-        <span class="lbl">Term:</span>
+        <span class="lbl"><?= e(get_label('Term')) ?>:</span>
         <div class="val" style="max-width:100px;">&nbsp;<?= e($cls['term']) ?></div>
         <div class="grp">
           <span class="lbl">Class&nbsp;Average:</span>
@@ -647,7 +667,7 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
         </div>
       </div>
       <div class="info-row">
-        <span class="lbl">Class:</span>
+        <span class="lbl"><?= e(get_label('Class')) ?>:</span>
         <div class="val" style="max-width:120px;">&nbsp;<?= e($cls['name']) ?></div>
         <?php if ($cls['pos_visible']): ?>
         <div class="grp">
@@ -661,10 +681,38 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
         </div>
         <?php endif; ?>
         <div class="grp">
-          <span class="lbl">Next&nbsp;Term:</span>
+          <span class="lbl">Next <?= e(get_label('Term')) ?>:</span>
           <div class="val">&nbsp;<?= e($cls['next_term_date'] ?? '') ?></div>
         </div>
       </div>
+      <?php if ($is_higher_ed): ?>
+      <?php
+        // Calculate GPA/CGPA for this student
+        $stu_credits = 0; $stu_points = 0;
+        foreach ($subjects as $sub) {
+            $sc = $allScores[$stu['id']][$sub['id']] ?? null;
+            if ($sc && $sc['total'] !== null && ($sub['credit_units'] ?? 0) > 0) {
+                $gp = calcGrade($sc['total'], true);
+                $gp_val = match($gp) { 'A'=>5, 'B'=>4, 'C'=>3, 'D'=>2, 'E'=>1, default=>0 };
+                $stu_points += $gp_val * $sub['credit_units'];
+                $stu_credits += $sub['credit_units'];
+            }
+        }
+        $stu_gpa = $stu_credits > 0 ? round($stu_points / $stu_credits, 2) : 0.00;
+      ?>
+      <div class="info-row">
+        <span class="lbl">GPA:</span>
+        <div class="val" style="max-width:80px;">&nbsp;<strong><?= number_format($stu_gpa, 2) ?></strong></div>
+        <div class="grp">
+          <span class="lbl">Total&nbsp;Units:</span>
+          <div class="val" style="max-width:60px;">&nbsp;<?= $stu_credits ?></div>
+        </div>
+        <div class="grp">
+          <span class="lbl">Grade&nbsp;Points:</span>
+          <div class="val" style="max-width:60px;">&nbsp;<?= $stu_points ?></div>
+        </div>
+      </div>
+      <?php endif; ?>
     </div>
 
     <!-- Section title -->
@@ -674,9 +722,13 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
     <table class="gt">
       <thead>
         <tr>
-          <th class="subj-hd" style="width:22%;">SUBJECT</th>
-          <th style="width:9%;">CA1 (20)</th>
-          <th style="width:9%;">CA2 (20)</th>
+          <th class="subj-hd" style="width:22%;"><?= e(get_label('Subject')) ?></th>
+          <?php if ($is_higher_ed): ?>
+            <th style="width:10%;">CA (40)</th>
+          <?php else: ?>
+            <th style="width:9%;">CA1 (20)</th>
+            <th style="width:9%;">CA2 (20)</th>
+          <?php endif; ?>
           <th style="width:10%;">EXAM (60)</th>
           <th style="width:8%;">TOTAL</th>
           <th style="width:6%;">POS</th>
@@ -691,15 +743,19 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
             $ca2  = ($sc) ? $sc['ca2']  : null;
             $exam = ($sc) ? $sc['exam'] : null;
             $tot  = ($sc && $sc['total'] !== null) ? $sc['total'] : null;
-            $grade  = ($tot !== null) ? calcGrade((float)$tot) : '';
+            $grade  = ($tot !== null) ? calcGrade((float)$tot, $is_higher_ed) : '';
             $remark = $grade ? calcRemark($grade) : '';
             $spos   = $subjectPositions[$stu['id']][$sub['id']] ?? null;
             $sposStr = $spos ? ordinal($spos) : '—';
         ?>
         <tr>
           <td class="subj-td"><?= e($sub['name']) ?></td>
-          <td><?= ($ca1 !== null && $ca1 !== '')  ? $ca1  : '—' ?></td>
-          <td><?= ($ca2 !== null && $ca2 !== '')  ? $ca2  : '—' ?></td>
+          <?php if ($is_higher_ed): ?>
+            <td><?= ($ca1 !== null && $ca1 !== '') ? $ca1 : '—' ?></td>
+          <?php else: ?>
+            <td><?= ($ca1 !== null && $ca1 !== '') ? $ca1 : '—' ?></td>
+            <td><?= ($ca2 !== null && $ca2 !== '') ? $ca2 : '—' ?></td>
+          <?php endif; ?>
           <td><?= ($exam !== null && $exam !== '') ? $exam : '—' ?></td>
           <td><?= ($tot !== null && $tot !== '')  ? $tot  : '—' ?></td>
           <td><?= ($tot !== null && $tot !== '')  ? $sposStr : '—' ?></td>
@@ -711,8 +767,12 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
     </table>
 
     <div class="grade-note">
-      <span><strong>Scale:</strong> A1=75-100 · B2=70-74 · B3=65-69 · C4=60-64 · C5=55-59 · C6=50-54 · D7=45-49 · E8=40-44 · F9=0-39</span>
-      <span><strong>Subjects: <?= count($subjects) ?></strong></span>
+      <?php if ($is_higher_ed): ?>
+        <span><strong>Scale:</strong> A=70-100 · B=60-69 · C=50-59 · D=45-49 · E=40-44 · F=0-39</span>
+      <?php else: ?>
+        <span><strong>Scale:</strong> A1=75-100 · B2=70-74 · B3=65-69 · C4=60-64 · C5=55-59 · C6=50-54 · D7=45-49 · E8=40-44 · F9=0-39</span>
+      <?php endif; ?>
+      <span><strong><?= e(get_label('Subjects')) ?>: <?= count($subjects) ?></strong></span>
     </div>
 
     <!-- SKILLS + SCALE -->
@@ -755,10 +815,10 @@ body { background: #d0cdc5; font-family: Arial, Helvetica, sans-serif; overflow-
 
     <!-- FOOTER SIGNATURES -->
     <div class="pg-footer">
-      <div class="foot-line"><span class="foot-lbl">Form Teacher's Name</span><div class="foot-ul"></div></div>
-      <div class="foot-line"><span class="foot-lbl">Form Teacher's Comment</span><div class="foot-ul"></div></div>
-      <div class="foot-line"><span class="foot-lbl">Head Teacher's Comment</span><div class="foot-ul"></div></div>
-      <div class="foot-line" style="margin-bottom:0;"><span class="foot-lbl">Head Teacher's Signature &amp; Stamp</span><div class="foot-ul"></div></div>
+      <div class="foot-line"><span class="foot-lbl"><?= e(get_label('Form Teacher')) ?>'s Name</span><div class="foot-ul"></div></div>
+      <div class="foot-line"><span class="foot-lbl"><?= e(get_label('Form Teacher')) ?>'s Comment</span><div class="foot-ul"></div></div>
+      <div class="foot-line"><span class="foot-lbl"><?= e(get_label('Head Teacher')) ?>'s Comment</span><div class="foot-ul"></div></div>
+      <div class="foot-line" style="margin-bottom:0;"><span class="foot-lbl"><?= e(get_label('Head Teacher')) ?>'s Signature &amp; Stamp</span><div class="foot-ul"></div></div>
     </div>
     <!-- Code Visuals (QR/Barcode) -->
     <?php if ($template_id == 1): // QR Code ?>

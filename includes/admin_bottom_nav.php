@@ -79,11 +79,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
         </div>
         <div class="col-4">
+            <a href="../user/generate_transcript.php" class="text-decoration-none">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-scroll"></i></div>
+                <div class="extra-small fw-700 text-dark"><?php echo get_label('Broadsheet'); ?></div>
+            </a>
+        </div>
+        <?php if (hasFeature('CBT_EXAMS')): ?>
+        <div class="col-4">
             <a href="question_builder.php" class="text-decoration-none">
                 <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-brain"></i></div>
                 <div class="extra-small fw-700 text-dark">Builder</div>
             </a>
         </div>
+        <?php endif; ?>
         <div class="col-4">
             <a href="pricing.php" class="text-decoration-none">
                 <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3 mb-2 mx-auto d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-bolt"></i></div>

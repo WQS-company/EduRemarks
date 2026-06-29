@@ -62,11 +62,12 @@ $students = $stmt->fetchAll();
     <link rel="stylesheet" href="../css/style.css">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8fafc; }
-        .glass-card { background: #fff; border-radius: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 20px rgba(0,0,0,0.015); transition: 0.3s; }
+        .glass-card { background: #ffffff; border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03); }
         .student-avatar { background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
-        .bulk-bar { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border-radius: 12px; padding: 12px 20px; display: none; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
-        .bulk-bar.visible { display: flex; animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+        .bulk-bar { background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; border-radius: 16px; padding: 12px 24px; display: none; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15); border: 1px solid rgba(255,255,255,0.05); }
+        .bulk-bar.visible { display: flex; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
         
         #searchInput { border-radius: 50px; padding-left: 15px; border-color: #e2e8f0; background: #f8fafc; box-shadow: inset 0 2px 4px rgba(0,0,0,0.01); }
         #searchInput:focus { background: #fff; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
@@ -97,16 +98,20 @@ $students = $stmt->fetchAll();
         .student-list-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .student-list-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .btn-modern { font-weight: 700; letter-spacing: 0.3px; padding: 10px 24px; border-radius: 50px; transition: 0.3s; }
-        .btn-modern-primary { background: #2563eb; color: #fff; border: 1px solid #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
-        .btn-modern-primary:hover { background: #1d4ed8; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37,99,235,0.3); }
-        .btn-modern-light { background: #fff; color: #475569; border: 1px solid #e2e8f0; }
-        .btn-modern-light:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+        .btn-modern { font-weight: 700; letter-spacing: 0.3px; padding: 10px 24px; border-radius: 50px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap; }
+        .btn-modern-primary { background: linear-gradient(135deg, #1e40af, #3b82f6); color: #fff; border: none; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); }
+        .btn-modern-primary:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35); }
+        .btn-modern-primary:active { transform: translateY(0); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25); }
+        .btn-modern-light { background: #fff; color: #334155; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .btn-modern-light:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         
         .action-circle-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; color: #64748b; transition: 0.2s; }
         .action-circle-btn:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; transform: translateY(-2px); }
         .action-circle-btn.text-danger:hover { background: #fef2f2; color: #dc2626 !important; border-color: #fecaca; }
         .action-circle-btn.text-primary:hover { background: #eff6ff; color: #2563eb !important; border-color: #bfdbfe; }
+        
+        .student-list-row { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-color: #f1f5f9 !important; }
+        .student-list-row:hover { transform: translateY(-2px) scale(1.005); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04) !important; border-color: #cbd5e1 !important; }
 
         /* Powerful Mobile Responsiveness */
         @media (max-width: 768px) {
@@ -148,13 +153,13 @@ $students = $stmt->fetchAll();
 <?php endif; ?>
 
         <!-- Modern Header -->
-        <div class="row align-items-center mb-4">
-            <div class="col-lg-7 col-md-12 d-flex align-items-center gap-3 mb-3 mb-lg-0">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+            <div class="d-flex align-items-center gap-3 text-mobile-center flex-mobile-column">
                 <div class="bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width:55px; height:55px; font-size:1.5rem;">
                     <i class="fas fa-user-friends"></i>
                 </div>
                 <div>
-                    <h3 class="fw-900 mb-0 text-dark d-flex align-items-center gap-2" style="font-size:1.4rem; letter-spacing:-0.5px;">Manage <?php echo get_label('Pupils'); ?></h3>
+                    <h3 class="fw-900 mb-0 text-dark d-flex align-items-center gap-2 flex-mobile-column" style="font-size:1.4rem; letter-spacing:-0.5px;"><i class="fas fa-user-friends text-primary d-lg-none"></i> Manage <?php echo get_label('Pupils'); ?></h3>
                     <?php if ($class_context): ?>
                         <div class="text-muted fw-700 mt-1 uppercase" style="font-size:0.75rem; letter-spacing:0.8px;"><?php echo htmlspecialchars($class_context); ?> &bull; <?php echo $active_school['session_name'] ?? 'Active '.get_label('Term'); ?></div>
                     <?php else: ?>
@@ -162,11 +167,11 @@ $students = $stmt->fetchAll();
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="col-lg-5 col-md-12 header-buttons d-flex justify-content-lg-end gap-2 flex-wrap flex-md-nowrap">
-                <a href="<?php echo $class_id_filter ? 'report_management.php?class_id='.$class_id_filter : 'dashboard.php'; ?>" class="btn-modern btn-modern-primary d-flex align-items-center text-decoration-none shadow-sm">
+            <div class="header-buttons d-flex align-items-center gap-2 flex-wrap flex-md-nowrap w-mobile-100 justify-content-md-end">
+                <a href="<?php echo $class_id_filter ? 'report_management.php?class_id='.$class_id_filter : 'dashboard.php'; ?>" class="btn-modern btn-modern-primary d-flex align-items-center text-decoration-none shadow-sm justify-content-center" style="background: linear-gradient(135deg, #1e40af, #3b82f6); border:none;">
                     <i class="fas fa-percentage me-2"></i> Score Entry
                 </a>
-                <a href="academics.php" class="btn-modern btn-modern-light d-flex align-items-center text-decoration-none">
+                <a href="academics.php" class="btn-modern btn-modern-light d-flex align-items-center text-decoration-none justify-content-center">
                     <i class="fas fa-arrow-left me-2"></i><?php echo get_label('Classes'); ?>
                 </a>
             </div>
@@ -360,7 +365,7 @@ $students = $stmt->fetchAll();
                 <div class="modal-body p-4 bg-white">
                     <div class="row g-3">
                         <div class="col-md-6"><label class="form-label fw-800 text-muted small uppercase tracking-1">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control bg-light border-0 fw-bold px-3 py-2" name="full_name" id="edit_full_name" required></div>
-                        <div class="col-md-6"><label class="form-label fw-800 text-muted small uppercase tracking-1">Admission No <span class="text-danger">*</span></label><input type="text" class="form-control bg-light border-0 fw-bold px-3 py-2" name="admission_no" id="edit_admission_no" required></div>
+                        <div class="col-md-6"><label class="form-label fw-800 text-muted small uppercase tracking-1"><?php echo get_label('Admission No'); ?> <span class="text-danger">*</span></label><input type="text" class="form-control bg-light border-0 fw-bold px-3 py-2" name="admission_no" id="edit_admission_no" required></div>
                         <div class="col-md-6">
                             <label class="form-label fw-800 text-muted small uppercase tracking-1"><?php echo get_label('Class'); ?> <span class="text-danger">*</span></label>
                             <select class="form-select bg-light border-0 fw-bold px-3 py-2" name="student_class" id="edit_student_class" required>
@@ -440,7 +445,7 @@ $students = $stmt->fetchAll();
                     <div class="row g-3">
                         <div class="col-md-6"><label class="form-label fw-800 text-muted small uppercase tracking-1">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control bg-light border-0 fw-bold px-3 py-2" name="full_name" required placeholder="John Doe"></div>
                         <div class="col-md-6">
-                            <label class="form-label fw-800 text-muted small uppercase tracking-1">Admission No</label>
+                            <label class="form-label fw-800 text-muted small uppercase tracking-1"><?php echo get_label('Admission No'); ?></label>
                             <?php if ($active_school['adm_no_type'] === 'manual'): ?>
                                 <input type="text" class="form-control bg-light border-0 fw-bold px-3 py-2" name="admission_no" required placeholder="ADM/2024/001">
                             <?php else: ?>

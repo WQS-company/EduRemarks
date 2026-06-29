@@ -14,8 +14,8 @@ if (!$active_school) { header('Location: dashboard.php'); exit(); }
 // Determine if institution is tertiary (course mode)
 $school_type = strtolower($active_school['school_type'] ?? '');
 $is_course   = (str_contains($school_type,'university') || str_contains($school_type,'polytechnic') || str_contains($school_type,'college') || str_contains($school_type,'tertiary') || str_contains($school_type,'vocational')) ? 1 : 0;
-$label       = $is_course ? 'Course' : 'Subject';
-$label_pl    = $is_course ? 'Courses' : 'Subjects';
+$label       = get_label('Subject');
+$label_pl    = get_label('Subjects');
 
 // Fetch existing classes
 $stmt = $pdo->prepare("SELECT * FROM classes WHERE school_id=? ORDER BY name");
@@ -292,7 +292,7 @@ if ($current_session_id) {
 
                                 <div class="mt-4 p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3">
                                     <h6 class="fw-bold text-warning-emphasis small"><i class="fas fa-rocket me-2"></i>Promote <?php echo get_label('Pupils'); ?></h6>
-                                    <p class="text-muted" style="font-size:0.75rem;">Transition <?php echo strtolower(get_label('Pupils')); ?> from their current <?php echo strtolower(get_label('Class')); ?> to the next sequence level (e.g., Level 100 &rarr; Level 200). This is usually done at the end of the last <?php echo strtolower(get_label('Term')); ?>.</p>
+                                    <p class="text-muted" style="font-size:0.75rem;">Transition <?php echo strtolower(get_label('Pupils')); ?> from their current <?php echo strtolower(get_label('Class')); ?> to the next sequence (e.g., <?php echo get_label('Class'); ?> 1 &rarr; <?php echo get_label('Class'); ?> 2). This is usually done at the end of the last <?php echo strtolower(get_label('Term')); ?>.</p>
                                     <button class="btn btn-warning btn-sm w-100 fw-bold rounded-pill" onclick="openPromotionModal()">
                                         START AUTOMATIC PROMOTION
                                     </button>
@@ -420,9 +420,10 @@ if ($current_session_id) {
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const IS_COURSE = <?php echo $is_course ? 'true' : 'false'; ?>;
-const LABEL     = IS_COURSE ? 'Course' : 'Subject';
+const LABEL     = '<?php echo get_label("Subject"); ?>';
 const CLASS_NAME_LABEL = '<?php echo get_label("Class Name"); ?>';
 const SECTION_LABEL    = '<?php echo get_label("Section"); ?>';
+const TERM_LABEL       = '<?php echo get_label("Term"); ?>';
 const SUBJECT_NAME_LABEL = '<?php echo get_label("Subject Name"); ?>';
 const SUBJECT_CODE_LABEL = '<?php echo get_label("Subject Code"); ?>';
 let classRowId = 0, subRowId = 0;
@@ -549,7 +550,7 @@ function openDeleteModal(id, type, name) {
     if(type === 'class') label = CLASS_NAME_LABEL.replace(' Name', '');
     else if(type === 'subject') label = LABEL;
     else if(type === 'session') label = 'Academic Session';
-    else if(type === 'term') label = 'Academic ' + (IS_COURSE ? 'Semester' : 'Term');
+    else if(type === 'term') label = 'Academic ' + TERM_LABEL;
     
     document.getElementById('deleteTypeLabel').textContent = label;
     document.getElementById('deleteItemName').textContent = name;

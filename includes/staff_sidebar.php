@@ -33,6 +33,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <?php endforeach; ?>
             </ul>
         </div>
+
+        <!-- Sidebar Navigation Search -->
+        <div class="px-2 mt-3">
+            <div class="position-relative sidebar-search-box">
+                <i class="fas fa-search position-absolute text-white opacity-40 search-icon" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none; transition: all 0.2s ease;"></i>
+                <input type="text" id="navSearchInput" class="form-control form-control-sm text-white" placeholder="Search navigation..." autocomplete="off">
+                <span class="search-shortcut position-absolute text-white opacity-40" style="right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; font-weight: 700; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); pointer-events: none; transition: all 0.2s ease;">/</span>
+                <button type="button" id="clearNavSearch" class="btn btn-sm text-white position-absolute border-0 p-0 opacity-50" style="right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <nav class="mt-3">
@@ -47,7 +59,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
         <?php if (hasFeature('COURSE_CURRICULUM') && ($active_school['show_curriculum'] ?? 1)): ?>
         <a href="curriculum.php" class="sa-nav-link <?php echo $current_page == 'curriculum.php' ? 'active' : ''; ?>">
-            <i class="fas fa-scroll me-2 text-warning"></i> Course Curriculum
+            <i class="fas fa-scroll me-2 text-warning"></i> <?php echo get_label('Subject'); ?> Curriculum
         </a>
         <?php endif; ?>
         <?php if (hasFeature('CBT_EXAMS') && $staff_permissions['can_manage_cbt']): ?>
@@ -55,7 +67,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-brain me-2 text-warning"></i> Question Builder
         </a>
         <?php endif; ?>
-        <?php if(defined('FEATURE_CBT_EXAMS') ? hasFeature('CBT_EXAMS') : true): ?>
+        <?php if(hasFeature('CBT_EXAMS')): ?>
         <a href="cbt_exams.php" class="sa-nav-link <?php echo $current_page == 'cbt_exams.php' ? 'active' : ''; ?>">
             <i class="fas fa-laptop-code me-2"></i> CBT / Exams
         </a>
@@ -76,6 +88,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <?php if ($staff_permissions['can_manage_academics']): ?>
         <a href="academics.php" class="sa-nav-link <?php echo $current_page == 'academics.php' ? 'active' : ''; ?>">
             <i class="fas fa-book-reader me-2"></i> Academic Records
+        </a>
+        <a href="../user/generate_transcript.php" class="sa-nav-link <?php echo $current_page == 'generate_transcript.php' ? 'active' : ''; ?>">
+            <i class="fas fa-scroll me-2 text-warning"></i> <?php echo get_label('Broadsheet'); ?>
         </a>
         <?php endif; ?>
         <a href="support.php" class="sa-nav-link <?php echo $current_page == 'support.php' ? 'active' : ''; ?>">
@@ -218,6 +233,95 @@ document.addEventListener('DOMContentLoaded', function() {
                 overlay.classList.remove('active');
              }
         });
+    });
+});
+</script>
+
+<style>
+.sidebar-search-box .form-control {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    color: #ffffff !important;
+    font-size: 0.78rem !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    height: 34px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+}
+.sidebar-search-box .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.38) !important;
+}
+.sidebar-search-box .form-control:focus {
+    background: rgba(0, 0, 0, 0.35) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
+}
+.sidebar-search-box.has-text .search-shortcut,
+.sidebar-search-box:focus-within .search-shortcut {
+    opacity: 0 !important;
+    transform: translateY(-50%) scale(0.8) !important;
+    pointer-events: none !important;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('navSearchInput');
+    const clearBtn = document.getElementById('clearNavSearch');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+            const container = this.closest('.sidebar-search-box');
+            
+            if (q.length > 0) {
+                container.classList.add('has-text');
+                if (clearBtn) clearBtn.style.display = 'block';
+            } else {
+                container.classList.remove('has-text');
+                if (clearBtn) clearBtn.style.display = 'none';
+            }
+            
+            const items = document.querySelectorAll('.sa-sidebar nav .sa-nav-link');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (item.getAttribute('href') && item.getAttribute('href').includes('logout.php') && q === '') {
+                    item.style.setProperty('display', '', 'important');
+                    return;
+                }
+                if (text.includes(q)) {
+                    item.style.setProperty('display', '', 'important');
+                } else {
+                    item.style.setProperty('display', 'none', 'important');
+                }
+            });
+        });
+    }
+    
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                searchInput.focus();
+            }
+        });
+    }
+    
+    // Keyboard keybind listeners
+    document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            searchInput?.focus();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput?.focus();
+        }
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+            searchInput.blur();
+        }
     });
 });
 </script>

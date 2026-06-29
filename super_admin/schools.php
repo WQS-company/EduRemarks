@@ -158,7 +158,7 @@ $schools = $stmt->fetchAll();
                         'FEE_MANAGEMENT' => 'Fiscal & Wallet Hub',
                         'PRINTING_REPORTS' => 'Premium PDF & Printing Nodes',
                         'STUDENT_PORTAL' => 'Institutional Student/Parent Hub',
-                        'COURSE_CURRICULUM' => 'Institutional Course Curriculum'
+                        'COURSE_CURRICULUM' => 'Institutional ' . get_label('Subject') . ' Curriculum'
                     ];
                     foreach ($available_features as $key => $label):
                     ?>

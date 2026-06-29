@@ -47,7 +47,7 @@ $stu_stmt->execute([$class_id, $school_id]);
 $students_in_class = $stu_stmt->fetchAll();
 
 $is_course = !empty($assigned_subjects) && $assigned_subjects[0]['is_course'];
-$label_pl  = $is_course ? 'Courses' : 'Subjects';
+$label_pl  = get_label('Subjects');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,7 +154,7 @@ $label_pl  = $is_course ? 'Courses' : 'Subjects';
                         <tr>
                             <th>#</th>
                             <th><?php echo rtrim(get_label('Pupils'), 's'); ?> Name</th>
-                            <th>Admission No</th>
+                            <th><?php echo get_label('Admission No'); ?></th>
                             <th>Gender</th>
                             <th>Date of Birth</th>
                             <th>Guardian</th>

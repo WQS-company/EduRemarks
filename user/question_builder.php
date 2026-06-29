@@ -72,20 +72,33 @@ $sessions = $stmt_sessions->fetchAll();
     <link rel="stylesheet" href="../css/style.css">
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
-        .glass-card { background: #fff; border-radius: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 25px rgba(0,0,0,0.02); transition: 0.3s; }
-        .question-block { border-left: 4px solid #3b82f6 !important; background: #fdfdfd; margin-bottom: 20px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+        .glass-card { background: #fff; border-radius: 20px; border: 1px solid #eef2f6; box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        .question-block { border-left: 4px solid #3b82f6 !important; background: #fff; margin-bottom: 20px; animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1); transition: all 0.2s ease; }
+        .question-block:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.08); border-left-color: #2563eb !important; }
+        .question-block:focus-within { border-left-color: #10b981 !important; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.08); }
+        @keyframes slideIn { from{opacity:0;transform:translateY(15px);} to{opacity:1;transform:translateY(0);} }
         .block-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
-        .type-pill { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; border-radius: 50px; background: #eff6ff; color: #3b82f6; }
-        .guide-box { background: #0f172a; color: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
-        .btn-modern { font-weight: 800; border-radius: 12px; padding: 10px 20px; transition: 0.3s; }
-        .btn-modern:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .form-label { font-weight: 700; color: #475569; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sticky-controls { position: sticky; top: 10px; z-index: 100; }
+        .type-pill { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; padding: 5px 12px; border-radius: 50px; background: #eff6ff; color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.1); }
+        .guide-box { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; border-radius: 16px; padding: 25px; margin-bottom: 25px; position: relative; overflow: hidden; }
+        .guide-box::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; filter: blur(30px); }
+        .btn-modern { font-weight: 700; border-radius: 12px; padding: 12px 24px; transition: all 0.2s ease; font-size: 0.85rem; letter-spacing: 0.3px; }
+        .btn-modern:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .btn-modern:active { transform: translateY(0); }
+        .btn-primary-gradient { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; color: white; }
+        .btn-primary-gradient:hover { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; }
+        .form-label { font-weight: 700; color: #475569; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        .form-select, .form-control { border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 14px; transition: all 0.2s ease; background-color: #f8fafc; font-size: 0.9rem; }
+        .form-select:focus, .form-control:focus { background-color: #fff; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); outline: none; }
+        .sticky-controls { position: sticky; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 20px; }
         
+        .eco-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; border-radius: 50px; background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .border-dashed { border: 2px dashed #cbd5e1 !important; border-radius: 20px; background: transparent; transition: all 0.2s ease; }
+        .border-dashed:hover { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.01); }
+
         /* Mobile overrides */
         @media (max-width: 576px) {
-            .btn-modern { width: 100%; margin-bottom: 10px; font-size: 0.7rem !important; white-space: nowrap; padding-left: 10px; padding-right: 10px; }
+            .btn-modern { width: 100%; margin-bottom: 10px; font-size: 0.75rem !important; white-space: nowrap; padding-left: 10px; padding-right: 10px; }
             .header-info { text-align: center; }
             .type-pill { font-size: 0.55rem; }
         }
@@ -116,7 +129,7 @@ $sessions = $stmt_sessions->fetchAll();
                 </div>
                 <div class="d-flex gap-2 w-mobile-100">
                     <button class="btn btn-outline-dark btn-modern" onclick="showGuide()"><i class="fas fa-info-circle me-1"></i> Build Guide</button>
-                    <button class="btn btn-primary btn-modern shadow-lg" style="font-size: 0.85rem;" onclick="triggerGenerate()"><i class="fas fa-print me-1"></i> Generate Paper</button>
+                    <button class="btn btn-primary-gradient btn-modern shadow-lg" style="font-size: 0.85rem;" onclick="triggerGenerate()"><i class="fas fa-print me-1"></i> Generate Paper</button>
                 </div>
             </div>
 
@@ -131,8 +144,9 @@ $sessions = $stmt_sessions->fetchAll();
             <div class="row g-4">
                 <div class="col-lg-4 order-lg-2">
                     <div class="sticky-controls">
-                        <div class="glass-card p-4 mb-4">
-                            <h6 class="fw-900 text-dark mb-3">Institutional Metadata</h6>
+                        <!-- Institutional Metadata Card -->
+                        <div class="glass-card p-4">
+                            <h6 class="fw-900 text-dark mb-3"><i class="fas fa-university text-primary me-2"></i>Institutional Metadata</h6>
                             <div class="mb-3">
                                 <label class="form-label"><?php echo get_label('Subject'); ?> Context</label>
                                 <select class="form-select border-0 bg-light fw-bold" id="examSubject">
@@ -170,8 +184,46 @@ $sessions = $stmt_sessions->fetchAll();
                             </div>
                         </div>
 
+                        <!-- Paper Optimization Deck -->
+                        <div class="glass-card p-4 border-success border-opacity-25" style="background: rgba(240, 253, 250, 0.7); backdrop-filter: blur(8px);">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-900 text-dark mb-0"><i class="fas fa-leaf text-success me-2"></i>Paper Optimization</h6>
+                                <span class="eco-badge">Eco Friendly</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-success">Layout Density</label>
+                                <select class="form-select border-0 bg-white shadow-sm fw-bold" id="layoutDensity" onchange="updateEcoMeter()">
+                                    <option value="standard">Standard (Spaced Layout)</option>
+                                    <option value="economic" selected>Economic (Compact, 2-Col MCQ)</option>
+                                    <option value="ultra">Ultra-Economic (Micro, Inline MCQ)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-success">Essay Writing Space</label>
+                                <select class="form-select border-0 bg-white shadow-sm fw-bold" id="writingSpace" onchange="updateEcoMeter()">
+                                    <option value="full">Include Full Ruled Space</option>
+                                    <option value="compact">Include Compact Ruled Space</option>
+                                    <option value="none" selected>No Writing Space (Question Paper Only)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mt-3 p-3 rounded-3 bg-white border border-success border-opacity-10 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-800 text-muted">Estimated Paper Saved:</span>
+                                    <span class="fw-900 text-success" id="ecoSavingsPercentage">65%</span>
+                                </div>
+                                <div class="progress" style="height: 8px; border-radius: 10px; background: #eef2f6;">
+                                    <div id="ecoSavingsBar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 65%; border-radius: 10px;"></div>
+                                </div>
+                                <p class="extra-small text-muted mt-2 mb-0" id="ecoSavingsDescription" style="font-size: 0.72rem; line-height: 1.3;"><i class="fas fa-info-circle me-1"></i> Compact layout with MCQ options inline + question-only paper.</p>
+                            </div>
+                        </div>
+
+                        <!-- General Instructions Card -->
                         <div class="glass-card p-4">
-                            <h6 class="fw-900 text-dark mb-3">General Instructions</h6>
+                            <h6 class="fw-900 text-dark mb-3"><i class="fas fa-align-left text-primary me-2"></i>General Instructions</h6>
                             <textarea class="form-control border-0 bg-light fw-bold" id="examInstructions" rows="4" placeholder="Enter instructions (e.g., Answer all questions in section A...)"></textarea>
                         </div>
                     </div>
@@ -180,10 +232,10 @@ $sessions = $stmt_sessions->fetchAll();
                 <div class="col-lg-8 order-lg-1">
                     <div id="questionsContainer">
                         <!-- Questions will be dynamically added here -->
-                        <div class="glass-card p-5 text-center mb-4" id="emptyState">
-                            <i class="fas fa-layer-group fa-3x text-light mb-3"></i>
-                            <h5 class="fw-900">Your Builder is Empty</h5>
-                            <p class="text-muted small">Choose a question type from below to start building your examination paper.</p>
+                        <div class="glass-card p-5 text-center mb-4" id="emptyState" style="border: 2px dashed #e2e8f0; background: #fff;">
+                            <i class="fas fa-layer-group fa-3x text-muted opacity-30 mb-3 animate-pulse"></i>
+                            <h5 class="fw-900 text-dark">Your Builder is Empty</h5>
+                            <p class="text-muted small">Choose a question type from the deck below to start building your examination paper.</p>
                         </div>
                     </div>
 
@@ -530,6 +582,80 @@ $sessions = $stmt_sessions->fetchAll();
             computeCredits();
         }
 
+        function updateEcoMeter() {
+            const density = document.getElementById('layoutDensity').value;
+            const space = document.getElementById('writingSpace').value;
+            
+            let percent = 0;
+            let desc = '';
+            let barClass = 'bg-secondary';
+            let textClass = 'text-muted';
+            
+            if (density === 'standard' && space === 'full') {
+                percent = 0;
+                desc = 'Standard configuration. High paper usage.';
+                barClass = 'bg-secondary';
+                textClass = 'text-muted';
+            } else if (density === 'standard' && space === 'compact') {
+                percent = 15;
+                desc = 'Reduced essay space. Standard spacing elsewhere.';
+                barClass = 'bg-info';
+                textClass = 'text-info';
+            } else if (density === 'standard' && space === 'none') {
+                percent = 45;
+                desc = 'Question-only layout. Comfortable spacing.';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            } else if (density === 'economic' && space === 'full') {
+                percent = 25;
+                desc = 'Compact layout & 2-column options. Standard answer space.';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            } else if (density === 'economic' && space === 'compact') {
+                percent = 40;
+                desc = 'Compact layout with reduced answer space.';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            } else if (density === 'economic' && space === 'none') {
+                percent = 65;
+                desc = 'Compact layout with inline MCQs + question-only paper.';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            } else if (density === 'ultra' && space === 'full') {
+                percent = 50;
+                desc = 'Micro font & margins. Standard answer space.';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            } else if (density === 'ultra' && space === 'compact') {
+                percent = 70;
+                desc = 'Micro font & margins with compact answer space.';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            } else if (density === 'ultra' && space === 'none') {
+                percent = 85;
+                desc = 'Micro font, inline MCQs, and question-only. Maximum savings!';
+                barClass = 'bg-success';
+                textClass = 'text-success';
+            }
+            
+            const percentageEl = document.getElementById('ecoSavingsPercentage');
+            const barEl = document.getElementById('ecoSavingsBar');
+            const descEl = document.getElementById('ecoSavingsDescription');
+            
+            percentageEl.innerText = percent + '%';
+            percentageEl.className = 'fw-900 ' + textClass;
+            
+            barEl.style.width = percent + '%';
+            barEl.className = 'progress-bar progress-bar-striped progress-bar-animated ' + barClass;
+            
+            descEl.innerHTML = '<i class="fas fa-leaf me-1"></i> ' + desc;
+        }
+
+        // Run eco meter immediately
+        $(document).ready(function() {
+            updateEcoMeter();
+        });
+
         function computeCredits() {
             if (IS_SUPER_ADMIN) return;
 
@@ -582,6 +708,8 @@ $sessions = $stmt_sessions->fetchAll();
             const term = $('#examTerm').val();
             const type = $('#examType').val();
             const instructions = $('#examInstructions').val();
+            const density = document.getElementById('layoutDensity').value;
+            const space = document.getElementById('writingSpace').value;
 
             // Collect all questions
             const questions = [];

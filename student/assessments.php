@@ -2,6 +2,16 @@
 // student/assessments.php — CBT Tests & Manual Assessments
 require_once 'auth.php';
 
+// Detect school type
+$type = strtolower($student['school_type'] ?? '');
+$is_higher_ed = (
+    strpos($type, 'tertiary') !== false ||
+    strpos($type, 'vocational') !== false ||
+    strpos($type, 'polytechnic') !== false ||
+    strpos($type, 'university') !== false ||
+    strpos($type, 'college') !== false
+);
+
 // Get student's current class
 $cls_stmt = $pdo->prepare("SELECT c.id, c.name FROM classes c JOIN student_classes sc ON sc.class_id = c.id WHERE sc.student_id = ? AND sc.school_id = ? LIMIT 1");
 $cls_stmt->execute([$student_id, $school_id]);
@@ -229,22 +239,41 @@ if ($current_session_id) { $s = $pdo->prepare("SELECT name FROM academic_session
                     <div class="table-responsive">
                         <table class="score-table w-100 mb-0" style="border-spacing:0;">
                             <thead>
-                                <tr style="background:#f8fafc;"><th class="ps-3 py-3"><?php echo get_label('Subject'); ?></th><th class="py-3">CA1</th><th class="py-3">CA2</th><th class="py-3">Exam</th><th class="py-3">Total</th><th class="py-3">Grade</th></tr>
+                                <tr style="background:#f8fafc;">
+                                    <th class="ps-3 py-3"><?php echo get_label('Subject'); ?></th>
+                                    <?php if ($is_higher_ed): ?>
+                                        <th class="py-3">CA (40)</th>
+                                    <?php else: ?>
+                                        <th class="py-3">CA1 (20)</th>
+                                        <th class="py-3">CA2 (20)</th>
+                                    <?php endif; ?>
+                                    <th class="py-3">Exam (60)</th><th class="py-3">Total</th><th class="py-3">Grade</th>
+                                </tr>
                             </thead>
                             <tbody>
                             <?php foreach($manual_results as $res):
                                 $gc = 'grade-c';
-                                if($res['total'] >= 70) $gc = 'grade-a';
-                                elseif($res['total'] >= 60) $gc = 'grade-b';
-                                elseif($res['total'] < 40) $gc = 'grade-f';
+                                if ($is_higher_ed) {
+                                    if($res['total'] >= 70) $gc = 'grade-a';
+                                    elseif($res['total'] >= 60) $gc = 'grade-b';
+                                    elseif($res['total'] < 40) $gc = 'grade-f';
+                                } else {
+                                    if($res['total'] >= 75) $gc = 'grade-a';
+                                    elseif($res['total'] >= 65) $gc = 'grade-b';
+                                    elseif($res['total'] < 40) $gc = 'grade-f';
+                                }
                             ?>
                                 <tr style="border-bottom:1px solid #f1f5f9;">
                                     <td class="ps-3 py-3">
                                         <div class="fw-700" style="font-size:0.82rem;"><?php echo htmlspecialchars($res['subject_name']); ?></div>
                                         <div class="text-muted" style="font-size:0.6rem;"><?php echo htmlspecialchars($res['subject_code']); ?></div>
                                     </td>
-                                    <td class="fw-600"><?php echo $res['ca1']; ?></td>
-                                    <td class="fw-600"><?php echo $res['ca2']; ?></td>
+                                    <?php if ($is_higher_ed): ?>
+                                        <td class="fw-600"><?php echo $res['ca1']; ?></td>
+                                    <?php else: ?>
+                                        <td class="fw-600"><?php echo $res['ca1']; ?></td>
+                                        <td class="fw-600"><?php echo $res['ca2']; ?></td>
+                                    <?php endif; ?>
                                     <td class="fw-600"><?php echo $res['exam']; ?></td>
                                     <td><span class="fw-900"><?php echo $res['total']; ?></span></td>
                                     <td><div class="grade-pill <?php echo $gc; ?>"><?php echo $res['grade']; ?></div></td>

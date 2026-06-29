@@ -211,7 +211,7 @@ if ($active_school && $access_status === 'active') {
                                      <span class="badge bg-soft-primary text-primary px-3 rounded-pill d-flex align-items-center" style="font-size: 0.65rem; background: #EEF2FB; font-weight: 800;"><?php echo $cls['student_count']; ?> <?php echo get_label('Pupils'); ?></span>
                                 </div>
                                 <h5 class="fw-800 text-dark mb-1"><?php echo htmlspecialchars($cls['name']); ?></h5>
-                                <p class="extra-small text-muted fw-bold uppercase mb-4"><?php echo htmlspecialchars($cls['code']); ?><?php echo $cls['section'] ? ' &bull; Section '.$cls['section'] : ''; ?></p>
+                                <p class="extra-small text-muted fw-bold uppercase mb-4"><?php echo htmlspecialchars($cls['code']); ?><?php echo $cls['section'] ? ' &bull; '.get_label('Section').' '.$cls['section'] : ''; ?></p>
                                 
                                 <div class="d-flex flex-wrap gap-1 mb-4">
                                     <?php $names = explode('|',$cls['subject_names']); foreach($names as $sname): ?>

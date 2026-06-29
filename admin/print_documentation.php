@@ -276,7 +276,7 @@ $filtered_features = $is_super_admin ? $all_features : $all_features; // Show fu
                     <td>Unlimited ID generation & digital files</td>
                 </tr>
                 <tr>
-                    <td>Staff & Faculty Portal</td>
+                    <td><?php echo get_label('Staff'); ?> Portal</td>
                     <td>Zero (Inclusive)</td>
                     <td>Unlimited lesson plans & assignments</td>
                 </tr>
@@ -319,7 +319,7 @@ $filtered_features = $is_super_admin ? $all_features : $all_features; // Show fu
                 <p>Customizable admission ID patterns, digital student folders, and automated onboarding protocols.</p>
             </div>
             <div class="feature-card">
-                <h4>Staff & Faculty Node</h4>
+                <h4><?php echo get_label('Staff'); ?> Node</h4>
                 <p>Digital lesson planning, attendance tracking, and dynamic classroom assignments for every educator.</p>
             </div>
             <div class="feature-card">

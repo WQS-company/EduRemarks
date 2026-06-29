@@ -233,7 +233,7 @@ if (!empty($active_school['id'])) {
                         <div class="glass-card">
                             <div class="card-header-premium">
                                 <h5><i class="fas fa-layer-group text-success"></i> Academic Roster Nodes</h5>
-                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill fw-bold" id="btnAddSection"><i class="fas fa-plus"></i> Add New Section</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill fw-bold" id="btnAddSection"><i class="fas fa-plus"></i> Add New <?php echo get_label('Section'); ?></button>
                             </div>
                             <div class="card-body-premium">
                                 <div id="sectionsContainer">
@@ -436,7 +436,7 @@ if (!empty($active_school['id'])) {
         const node = document.createElement('div');
         node.className = 'section-node';
         node.innerHTML = `
-            <input type="text" class="form-control py-3 fw-600 border shadow-none" name="sections[]" placeholder="Section Name">
+            <input type="text" class="form-control py-3 fw-600 border shadow-none" name="sections[]" placeholder="<?php echo get_label('Section Name'); ?>">
             <button type="button" class="btn-rm-node btn-remove-section"><i class="fas fa-trash-alt"></i></button>
         `;
         container.appendChild(node);

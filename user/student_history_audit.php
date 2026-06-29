@@ -202,7 +202,7 @@ $display_history = array_reverse($chronological_history, true);
                                             <tr>
                                                 <th><?php echo get_label('Subject'); ?></th>
                                                 <th class="text-center"><?php echo $is_higher_ed ? 'Units' : 'C.A'; ?></th>
-                                                <th class="text-center"><?php echo $is_higher_ed ? 'Grade' : 'Exam'; ?></th>
+                                                <th class="text-center">Grade</th>
                                                 <th class="text-center">Total</th>
                                                 <th class="text-center">Remark</th>
                                             </tr>
@@ -218,13 +218,9 @@ $display_history = array_reverse($chronological_history, true);
                                                         <?php echo $is_higher_ed ? $res['credit_units'] : ($res['ca1'] + $res['ca2']); ?>
                                                     </td>
                                                     <td class="text-center d-flex justify-content-center">
-                                                        <?php if ($is_higher_ed): ?>
-                                                            <div class="grade-node grade-<?php echo substr($res['grade'], 0, 1); ?>">
-                                                                <?php echo $res['grade']; ?>
-                                                            </div>
-                                                        <?php else: ?>
-                                                            <span class="fw-700"><?php echo $res['exam']; ?></span>
-                                                        <?php endif; ?>
+                                                        <div class="grade-node grade-<?php echo strtoupper(substr($res['grade'], 0, 1)); ?>">
+                                                            <?php echo $res['grade']; ?>
+                                                        </div>
                                                     </td>
                                                     <td class="text-center fw-900 text-dark"><?php echo $res['total']; ?>%</td>
                                                     <td class="text-center small fw-700 opacity-75"><?php echo $res['remark']; ?></td>

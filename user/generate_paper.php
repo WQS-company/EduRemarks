@@ -121,10 +121,20 @@ function getNumbering($index, $format) {
             z-index: 1;
         }
         @media print {
-            @page { margin: 0; size: auto; }
+            @page { margin: 0; size: A4; }
             body { background: none; margin: 0; padding: 0; }
-            .page { margin: 0; padding: 20mm; box-shadow: none; page-break-after: always; width: 100%; border: none; }
-            .page:last-of-type { page-break-after: auto; }
+            .page { 
+                margin: 0 !important; 
+                padding: 20mm !important; 
+                box-shadow: none !important; 
+                page-break-after: always !important; 
+                width: 100% !important; 
+                border: none !important;
+                min-height: 0 !important;
+                height: auto !important;
+                box-sizing: border-box !important;
+            }
+            .page:last-of-type { page-break-after: avoid !important; }
             .no-print { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
         }
         .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 15px; margin-bottom: 25px; }
@@ -333,6 +343,105 @@ function getNumbering($index, $format) {
             background-image: repeating-linear-gradient(to bottom, transparent, transparent 27px, #000 27px, #000 28px);
         }
         <?php endif; ?>
+
+        /* Header Table & Metadata Grid Layout (Word Office Style) */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-bottom: 2px solid #000;
+            margin-bottom: 20px;
+        }
+        .header-logo-td {
+            width: 15%;
+            vertical-align: middle;
+            padding-bottom: 12px;
+        }
+        .header-text-td {
+            width: 85%;
+            text-align: center;
+            vertical-align: middle;
+            padding-bottom: 12px;
+        }
+        .school-logo {
+            max-height: 80px;
+            max-width: 100px;
+            object-fit: contain;
+        }
+        .school-name {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+        .school-motto {
+            font-size: 13px;
+            font-style: italic;
+            margin: 4px 0 0 0;
+            color: #334155;
+        }
+        .exam-details {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .subject-title {
+            margin-top: 4px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .meta-table td {
+            padding: 6px 4px;
+            vertical-align: middle;
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #1a1a1a;
+            white-space: nowrap;
+        }
+        .meta-value {
+            border-bottom: 1px solid #000;
+            padding-left: 8px !important;
+        }
+
+        /* Ultra Density Scale-Downs */
+        <?php if ($layout_density === 'ultra'): ?>
+        .header-table {
+            margin-bottom: 10px;
+            border-bottom-width: 1.5px;
+        }
+        .school-logo {
+            max-height: 50px;
+        }
+        .school-name {
+            font-size: 16px;
+        }
+        .exam-details {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        .subject-title {
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        .meta-table {
+            font-size: 10px;
+            margin-bottom: 10px;
+        }
+        .meta-table td {
+            padding: 3px 2px;
+        }
+        <?php endif; ?>
     </style>
 </head>
 <body>
@@ -349,57 +458,67 @@ function getNumbering($index, $format) {
         $student = ($mode === 'booklet' && $target_class_id && isset($students[$i])) ? $students[$i] : null;
     ?>
     <div class="page">
-        <div class="header">
-            <?php if ($school['logo_path']): ?>
-                <img src="../<?php echo htmlspecialchars($school['logo_path']); ?>" class="school-logo">
-            <?php endif; ?>
-            <h1 class="school-name"><?php echo htmlspecialchars(html_entity_decode($school['school_name'], ENT_QUOTES), ENT_QUOTES); ?></h1>
-            <?php if (isset($school['motto'])): ?>
-                <p class="school-motto"><?php echo htmlspecialchars(html_entity_decode($school['motto'], ENT_QUOTES), ENT_QUOTES); ?></p>
-            <?php endif; ?>
-            <div class="exam-details">
-                <?php echo strtoupper(htmlspecialchars(html_entity_decode($exam_type, ENT_QUOTES), ENT_QUOTES)); ?> - <?php echo htmlspecialchars(html_entity_decode($session, ENT_QUOTES), ENT_QUOTES); ?> (<?php echo htmlspecialchars(html_entity_decode($term, ENT_QUOTES), ENT_QUOTES); ?>)<br>
-                SUBJECT: <?php echo strtoupper(htmlspecialchars(html_entity_decode($subject_name, ENT_QUOTES), ENT_QUOTES)); ?>
-            </div>
-        </div>
+        <!-- Letterhead Header Table -->
+        <table class="header-table">
+            <tr>
+                <?php if ($school['logo_path']): ?>
+                <td class="header-logo-td">
+                    <img src="../<?php echo htmlspecialchars($school['logo_path']); ?>" class="school-logo">
+                </td>
+                <?php endif; ?>
+                <td class="header-text-td" style="<?php echo !$school['logo_path'] ? 'width: 100%; text-align: center;' : ''; ?>">
+                    <h1 class="school-name"><?php echo htmlspecialchars(html_entity_decode($school['school_name'], ENT_QUOTES), ENT_QUOTES); ?></h1>
+                    <?php if (!empty($school['motto'])): ?>
+                        <p class="school-motto"><?php echo htmlspecialchars(html_entity_decode($school['motto'], ENT_QUOTES), ENT_QUOTES); ?></p>
+                    <?php endif; ?>
+                    <div class="exam-details">
+                        <?php echo strtoupper(htmlspecialchars(html_entity_decode($exam_type, ENT_QUOTES), ENT_QUOTES)); ?> &bull; <?php echo htmlspecialchars(html_entity_decode($session, ENT_QUOTES), ENT_QUOTES); ?> (<?php echo htmlspecialchars(html_entity_decode($term, ENT_QUOTES), ENT_QUOTES); ?>)
+                    </div>
+                    <div class="subject-title">
+                        SUBJECT: <?php echo strtoupper(htmlspecialchars(html_entity_decode($subject_name, ENT_QUOTES), ENT_QUOTES)); ?>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
-        <div class="student-meta">
-            <?php if ($mode === 'booklet' && $student): ?>
-                <?php if ($layout_density === 'ultra'): ?>
-                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                        <div>NAME: <span><?php echo htmlspecialchars(html_entity_decode($student['full_name'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                        <div>CLASS: <span><?php echo htmlspecialchars(html_entity_decode($student['class_name'] ?? '', ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                        <div>ADMISSION NO: <span><?php echo htmlspecialchars(html_entity_decode($student['admission_no'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                        <div>DATE: <span>__________________</span></div>
-                    </div>
-                <?php else: ?>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <div>NAME: <span><?php echo htmlspecialchars(html_entity_decode($student['full_name'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                        <div>CLASS: <span><?php echo htmlspecialchars(html_entity_decode($student['class_name'] ?? '', ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>ADMISSION NO: <span><?php echo htmlspecialchars(html_entity_decode($student['admission_no'], ENT_QUOTES), ENT_QUOTES); ?></span></div>
-                        <div>DATE: <span>____________________</span></div>
-                    </div>
-                <?php endif; ?>
-            <?php else: ?>
-                <?php if ($layout_density === 'ultra'): ?>
-                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                        <div>NAME: ____________________________________________</div>
-                        <div>ADM NO: __________________</div>
-                        <div>CLASS: ___________</div>
-                        <div>DATE: _________</div>
-                    </div>
-                <?php else: ?>
-                    <div style="margin-bottom: 12px;">NAME: __________________________________________________________________</div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>ADMISSION NO: _______________________</div>
-                        <div>CLASS: _______________________</div>
-                        <div>DATE: _________</div>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
-        </div>
+        <!-- Candidate Metadata Grid Table (Word Office Style) -->
+        <table class="meta-table">
+            <tr>
+                <td class="meta-label" style="width: 15%;">CANDIDATE NAME:</td>
+                <td class="meta-value" style="width: 50%;">
+                    <?php if ($student): ?>
+                        <strong><?php echo htmlspecialchars(html_entity_decode($student['full_name'], ENT_QUOTES), ENT_QUOTES); ?></strong>
+                    <?php else: ?>
+                        &nbsp;
+                    <?php endif; ?>
+                </td>
+                <td class="meta-label" style="text-align: right; width: 12%; padding-right: 8px;">CLASS:</td>
+                <td class="meta-value" style="width: 23%;">
+                    <?php if ($student): ?>
+                        <strong><?php echo htmlspecialchars(html_entity_decode($student['class_name'] ?? '', ENT_QUOTES), ENT_QUOTES); ?></strong>
+                    <?php else: ?>
+                        &nbsp;
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr style="height: 6px;">
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="meta-label">ADMISSION NO:</td>
+                <td class="meta-value">
+                    <?php if ($student): ?>
+                        <strong><?php echo htmlspecialchars(html_entity_decode($student['admission_no'], ENT_QUOTES), ENT_QUOTES); ?></strong>
+                    <?php else: ?>
+                        &nbsp;
+                    <?php endif; ?>
+                </td>
+                <td class="meta-label" style="text-align: right; padding-right: 8px;">DATE:</td>
+                <td class="meta-value">
+                    <?php echo date('d/m/Y'); ?>
+                </td>
+            </tr>
+        </table>
 
         <?php if ($instructions): ?>
         <div class="instructions">

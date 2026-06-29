@@ -139,7 +139,7 @@ if ($active_school_id) {
                                     <tbody>
                                         <?php foreach ($active_staff as $as): ?>
                                         <tr>
-                                            <td data-label="Staff" class="fw-bold"><?php echo htmlspecialchars($as['full_name']); ?></td>
+                                            <td data-label="Staff" class="fw-bold" id="staff-name-text-<?php echo $as['detail_id']; ?>"><?php echo htmlspecialchars($as['full_name']); ?></td>
                                             <td data-label="Email"><?php echo htmlspecialchars($as['email']); ?></td>
                                             <td data-label="Status">
                                                 <?php if($as['status'] === 'active'): ?>
@@ -176,10 +176,11 @@ if ($active_school_id) {
                                             </td>
                                             <td data-label="Actions" class="text-end">
                                                 <div class="d-flex gap-2 justify-content-end">
-                                                    <a href="edit_staff.php?id=<?php echo $as['detail_id']; ?>" class="btn btn-sm btn-outline-secondary" title="Edit Profile">
+                                                    <button class="btn btn-sm btn-outline-secondary" title="Edit Profile" onclick="toggleEditRow(<?php echo $as['detail_id']; ?>)">
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    </button>
                                                     <button class="btn btn-sm btn-outline-primary" title="Assign <?php echo get_label('Class'); ?> & <?php echo get_label('Subject'); ?>"
+                                                        id="btn-assign-<?php echo $as['detail_id']; ?>"
                                                         onclick="openAssign(<?php echo $as['detail_id']; ?>, '<?php echo addslashes($as['full_name']); ?>')">
                                                         <i class="fas fa-graduation-cap"></i>
                                                     </button>
@@ -198,9 +199,43 @@ if ($active_school_id) {
                                                         </button>
                                                     <?php endif; ?>
                                                     
-                                                    <button class="btn btn-sm btn-outline-danger" title="Remove Permanently" onclick="confirmDeleteStaff(<?php echo $as['detail_id']; ?>, '<?php echo addslashes($as['full_name']); ?>')">
+                                                    <button class="btn btn-sm btn-outline-danger" title="Remove Permanently" 
+                                                        id="btn-delete-<?php echo $as['detail_id']; ?>"
+                                                        onclick="confirmDeleteStaff(<?php echo $as['detail_id']; ?>, '<?php echo addslashes($as['full_name']); ?>')">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- Collapsible Edit Profile Panel Row -->
+                                        <tr id="edit-expand-<?php echo $as['detail_id']; ?>" class="d-none bg-light border-0 animate-fade">
+                                            <td colspan="5" class="p-0 border-0">
+                                                <div class="expand-wrapper px-4 py-3 bg-light border-bottom border-top">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                         <div class="d-flex align-items-center gap-2">
+                                                             <i class="fas fa-user-pen text-primary"></i>
+                                                             <h6 class="fw-bold mb-0 text-dark" style="font-size:0.9rem;">Update Staff Profile: <span class="text-primary" id="edit-title-name-<?php echo $as['detail_id']; ?>"><?php echo htmlspecialchars($as['full_name']); ?></span></h6>
+                                                         </div>
+                                                         <button class="btn btn-sm btn-light border rounded-pill px-3 fw-bold" onclick="toggleEditRow(<?php echo $as['detail_id']; ?>)" style="font-size:0.75rem;">
+                                                             <i class="fas fa-times me-1"></i> Close Panel
+                                                         </button>
+                                                    </div>
+                                                    
+                                                    <form onsubmit="submitStaffUpdate(event, <?php echo $as['detail_id']; ?>)">
+                                                         <div class="row g-3">
+                                                             <div class="col-md-5">
+                                                                 <label class="form-label fw-bold text-dark small text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Full Name <span class="text-danger">*</span></label>
+                                                                 <input type="text" class="form-control form-control-sm rounded-3" id="edit-name-<?php echo $as['detail_id']; ?>" value="<?php echo htmlspecialchars($as['full_name']); ?>" required>
+                                                             </div>
+                                                             <div class="col-md-4">
+                                                                 <label class="form-label fw-bold text-dark small text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Contact Phone</label>
+                                                                 <input type="text" class="form-control form-control-sm rounded-3" id="edit-phone-<?php echo $as['detail_id']; ?>" value="<?php echo htmlspecialchars($as['phone'] ?? ''); ?>">
+                                                             </div>
+                                                             <div class="col-md-3 d-flex align-items-end">
+                                                                 <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill py-2 fw-bold shadow-sm" style="font-size: 0.8rem;"><i class="fas fa-save me-1"></i> Save Changes</button>
+                                                             </div>
+                                                         </div>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
@@ -550,13 +585,81 @@ if ($active_school_id) {
             const row = document.getElementById('perm-expand-' + detailId);
             if (row) {
                 if (row.classList.contains('d-none')) {
-                    // Close any other open panels first
-                    document.querySelectorAll('[id^="perm-expand-"]').forEach(r => r.classList.add('d-none'));
+                    // Close all other panels (both edit and permissions)
+                    document.querySelectorAll('[id^="edit-expand-"], [id^="perm-expand-"]').forEach(r => r.classList.add('d-none'));
                     row.classList.remove('d-none');
                 } else {
                     row.classList.add('d-none');
                 }
             }
+        }
+
+        // Toggle Edit Row Collapsible Panel
+        function toggleEditRow(detailId) {
+            const row = document.getElementById('edit-expand-' + detailId);
+            if (row) {
+                if (row.classList.contains('d-none')) {
+                    // Close all other panels (both edit and permissions)
+                    document.querySelectorAll('[id^="edit-expand-"], [id^="perm-expand-"]').forEach(r => r.classList.add('d-none'));
+                    row.classList.remove('d-none');
+                } else {
+                    row.classList.add('d-none');
+                }
+            }
+        }
+
+        // Submit Staff Update AJAX
+        function submitStaffUpdate(event, detailId) {
+            event.preventDefault();
+            const newName = document.getElementById('edit-name-' + detailId).value.trim();
+            const newPhone = document.getElementById('edit-phone-' + detailId).value.trim();
+            
+            if (!newName) {
+                Notif.show('Full Name is required', 'error');
+                return;
+            }
+            
+            const csrfToken = typeof EDUREMARKS_CSRF_TOKEN !== 'undefined' ? EDUREMARKS_CSRF_TOKEN : '';
+            Spinner.show('Updating staff profile...');
+            
+            fetch('../ajax/update_staff_profile.php', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': csrfToken 
+                },
+                body: `staff_detail_id=${detailId}&full_name=${encodeURIComponent(newName)}&phone=${encodeURIComponent(newPhone)}&csrf_token=${csrfToken}`
+            })
+            .then(r => r.json())
+            .then(d => {
+                Spinner.hide();
+                if (d.success) {
+                    Notif.show(d.message, 'success');
+                    
+                    // Update layout cells dynamically
+                    document.getElementById('staff-name-text-' + detailId).textContent = newName;
+                    document.getElementById('edit-title-name-' + detailId).textContent = newName;
+                    
+                    // Update actions button onclick parameters dynamically to use new name
+                    const assignBtn = document.getElementById('btn-assign-' + detailId);
+                    if (assignBtn) {
+                        assignBtn.setAttribute('onclick', `openAssign(${detailId}, '${newName.replace(/'/g, "\\'")}')`);
+                    }
+                    const deleteBtn = document.getElementById('btn-delete-' + detailId);
+                    if (deleteBtn) {
+                        deleteBtn.setAttribute('onclick', `confirmDeleteStaff(${detailId}, '${newName.replace(/'/g, "\\'")}')`);
+                    }
+                    
+                    // Close panel
+                    toggleEditRow(detailId);
+                } else {
+                    Notif.show(d.message, 'error');
+                }
+            })
+            .catch(e => {
+                Spinner.hide();
+                Notif.show('Network error: ' + e.message, 'error');
+            });
         }
 
         // Update active badges inside parent table cell in real-time
